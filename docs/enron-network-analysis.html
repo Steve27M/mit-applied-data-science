@@ -1,0 +1,42 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Enron Email Network Analysis — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>Enron Email Network Analysis</h1><p>Using social network analysis to surface the key actors in Enron's senior leadership</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">We studied who emailed whom among Enron's top executives to find the most influential people in the group.</p>
+<ul><li>Enron rose to become one of the largest US firms before a sudden collapse, bankruptcy, and one of the biggest corporate fraud cases ever.</li><li>Goal: build a network from emails sent and received by senior officials to expose connections and the most important actors.</li><li>Subset of 50 senior officials drawn from the public Enron email corpus (cs.cmu.edu/~enron).</li><li>Approach: load emails as a graph, visualize structure, then quantify importance with centrality measures.</li><li>Findings help explain organizational influence and which nodes acted as hubs and bridges.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Edge List] --> B[Build Graph]
+  B --> C["Centrality (degree / betweenness)"]
+  C --> D[Community Detection]
+  D --> E[Interpret Key Actors]</pre></section>
+<section class="card"><h2>The Data</h2>
+<p class="plain">The raw data is a simple list of who sent an email to whom, which we turn into a network of people.</p>
+<ul><li>EmailEnron.csv holds 304 directed From-To email edges between senior officials.</li><li>Two columns only: 'From' and 'To', each a numeric node ID representing an official.</li><li>Loaded into an undirected graph of 80 nodes using NetworkX's from_pandas_edgelist.</li><li>Node degrees range from isolated single-link officials up to one node connected to 70 others.</li><li>Minimal schema makes this a pure structural (topology) analysis rather than a content analysis.</li></ul>
+</section><section class="card"><h2>Exploratory Analysis</h2>
+<p class="plain">We drew the network several ways to see its overall shape and spot the busiest people at a glance.</p>
+<ul><li>Visualized with three layouts: standard spring draw, shell (circular), and spring_layout.</li><li>Degree inspection shows one dominant node (degree 70) connected to nearly everyone in the group.</li><li>Next-busiest nodes by raw degree: 56 (20), 74 (16), 53 (11), 54 (11), 75 (11).</li><li>Long tail of low-degree nodes (degree 1) indicates peripheral officials with few contacts.</li><li>Circular layout proved clearest for highlighting the hub nodes against the periphery.</li></ul>
+<div class="figs"><img src="assets/enron-network-analysis/fig1.png" loading="lazy"><img src="assets/enron-network-analysis/fig2.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Actors / Network Structure</h2>
+<p class="plain">A handful of people consistently sit at the center of the network, with one clear hub above the rest.</p>
+<ul><li>Node 1 is the central hub, linked to all others; interpreted as a CEO-level figure.</li><li>Nodes 56 and 54 ranked important across every centrality measure computed.</li><li>Other recurring key actors include 74, 53, 27, and 50 across the measures.</li><li>Visualizations suggest internal team structures, though exact team membership stayed unclear.</li><li>Color-coding the top-5 nodes per measure made the influence hierarchy visible on the graph.</li></ul>
+<div class="figs"><img src="assets/enron-network-analysis/fig3.png" loading="lazy"><img src="assets/enron-network-analysis/fig4.png" loading="lazy"></div>
+</section><section class="card"><h2>Approach & Results</h2>
+<p class="plain">We ranked people four different ways to confirm who truly mattered in the network.</p>
+<ul><li>Degree centrality top-5: nodes 1, 56, 74, 53, 54 (most direct connections).</li><li>Eigenvector centrality top-5: nodes 1, 56, 74, 53, 54 (connected to other well-connected nodes).</li><li>Betweenness centrality top-5: nodes 1, 56, 54, 27, 74 (bridges on shortest paths between others).</li><li>Closeness centrality top-5: nodes 1, 56, 53, 54, 27 (shortest average distance to all others).</li><li>Node 1 ranked first on all four measures, confirming it as the unambiguous central authority.</li></ul>
+<div class="figs"><img src="assets/enron-network-analysis/fig5.png" loading="lazy"><img src="assets/enron-network-analysis/fig6.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">Network analysis turned a plain email log into a clear map of who held influence at Enron.</p>
+<ul><li>Graph visualization plus centrality measures pinpointed the most important officials objectively.</li><li>Convergence of all four measures on node 1 strongly identifies the top decision-maker.</li><li>Nodes 56 and 54 are consistent secondary power brokers worth deeper investigation.</li><li>Different centralities reveal different roles: hubs (degree) versus connectors (betweenness).</li><li>Built with: pandas, NetworkX, Matplotlib</li></ul>
+</section>
+<section class="card"><h2>More Visualizations</h2><div class="figs grid"><img src="assets/enron-network-analysis/fig7.png" loading="lazy"></div></section>
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>matplotlib</b> — plotting</li><li><b>networkx</b> — graph / network analysis</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

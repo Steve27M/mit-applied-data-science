@@ -1,0 +1,43 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FIFA World Cup Analysis — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>FIFA World Cup Analysis</h1><p>Mining 80+ years of World Cup history to guide a new football club's strategy</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">A brand-new football club asked us to dig through World Cup history to learn what drives winning nations, attendance, and goals.</p>
+<ul><li>Newly inaugurated club 'Brussels United FC' needs data-driven insight into World Cup performance and trends.</li><li>Goal: identify which countries win most, and analyze attendance, goals scored, and host-city patterns.</li><li>Scope spans every World Cup in history through 2014 across three linked datasets.</li><li>Framed as a foundational exploratory data analysis (EDA), not a predictive modeling task.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Raw Data] --> B[Clean & Validate]
+  B --> C[Univariate EDA]
+  C --> D[Bivariate / Correlation]
+  D --> E[Insights & Recommendations]</pre></section>
+<section class="card"><h2>The Data</h2>
+<p class="plain">We combined three official datasets covering every tournament, every match, and every player up to 2014.</p>
+<ul><li>WorldCups dataset: 20 tournaments (rows) across 10 columns of summary stats.</li><li>WorldCupMatches and WorldCupPlayers datasets capture per-match results and player line-ups.</li><li>Fields include Year, GoalsScored, MatchesPlayed, QualifiedTeams, Attendance, Stadium, City, and Stage.</li><li>Cleaning: mode imputation for missing Position/Event, mean/median imputation on numeric match fields.</li><li>GoalsScored averages 118.95 per tournament with a standard deviation of 32.97 across the 20 cups.</li></ul>
+<div class="figs"><img src="assets/fifa-world-cup-analysis/fig1.png" loading="lazy"></div>
+</section><section class="card"><h2>Exploratory Analysis</h2>
+<p class="plain">We checked distributions, spotted outliers with box plots, and mapped how the key numbers relate to each other.</p>
+<ul><li>Box plots used to detect and remove outliers via the IQR rule (Q1-1.5*IQR, Q3+1.5*IQR).</li><li>Distribution checks guided whether to use mean vs median imputation on skewed columns.</li><li>Correlation heatmap shows MatchesPlayed and Year are strongly positively correlated.</li><li>Univariate and bivariate analysis (scatter, line) explored goals, matches, and year together.</li><li>Both Matplotlib and Seaborn compared as visualization tools throughout the workflow.</li></ul>
+<div class="figs"><img src="assets/fifa-world-cup-analysis/fig2.png" loading="lazy"><img src="assets/fifa-world-cup-analysis/fig3.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Findings & Drivers</h2>
+<p class="plain">More goals over the years come from playing more matches, not from teams actually scoring more per game.</p>
+<ul><li>Year and GoalsScored are positively correlated, but Year and AverageGoal are negatively correlated.</li><li>The rise in total goals is driven by more MatchesPlayed, not higher per-match scoring.</li><li>Tournament size grew from 13-16 teams (1934-1978) to larger fields in later cups.</li><li>Mexico City has the highest average match attendance at roughly 93,807 spectators.</li><li>One city hosted as many as 23 World Cup matches, the maximum in the dataset.</li></ul>
+<div class="figs"><img src="assets/fifa-world-cup-analysis/fig4.png" loading="lazy"><img src="assets/fifa-world-cup-analysis/fig5.png" loading="lazy"></div>
+</section><section class="card"><h2>Insights & Recommendations</h2>
+<p class="plain">A handful of nations dominate the trophy, and host cities and attendance show clear, actionable patterns.</p>
+<ul><li>Only eight nations have won the 20 tournaments; Brazil leads with five titles (1958, 1962, 1970, 1994, 2002).</li><li>Germany and Italy follow with four titles each; Argentina and Uruguay with two each.</li><li>Brazil is the only team to have played in every World Cup tournament.</li><li>Home teams win a notable share of matches, an edge the club should factor into strategy.</li><li>Target high-attendance host cities like Mexico City for maximum match exposure.</li></ul>
+<div class="figs"><img src="assets/fifa-world-cup-analysis/fig6.png" loading="lazy"><img src="assets/fifa-world-cup-analysis/fig7.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">The analysis turns decades of raw results into a clear, evidence-based picture of what wins and what fills stadiums.</p>
+<ul><li>Winning is concentrated in a few elite nations, led decisively by Brazil.</li><li>Goal totals rise with more matches, not with sharper scoring per game.</li><li>Attendance and host-city analysis reveal where the sport draws the biggest crowds.</li><li>End-to-end EDA workflow: cleaning, imputation, outlier handling, and rich visualization.</li><li>Built with: pandas, NumPy, Matplotlib, Seaborn</li></ul>
+</section>
+<section class="card"><h2>More Visualizations</h2><div class="figs grid"><img src="assets/fifa-world-cup-analysis/fig8.png" loading="lazy"><img src="assets/fifa-world-cup-analysis/fig9.png" loading="lazy"><img src="assets/fifa-world-cup-analysis/fig10.png" loading="lazy"><img src="assets/fifa-world-cup-analysis/fig11.png" loading="lazy"></div></section>
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

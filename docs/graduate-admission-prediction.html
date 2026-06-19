@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Predicting Graduate Admission Chances — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>Predicting Graduate Admission Chances</h1><p>A neural network that flags which applicants are likely to be admitted to UCLA</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">We wanted to predict whether a graduate-school applicant is likely to be accepted based on their academic profile.</p>
+<ul><li>Applicants and admissions teams need an early signal of how strong a candidate's chances really are.</li><li>Each student's chance of admission was reframed into a yes/no call using an 80% threshold (above 80% = Admit).</li><li>Goal: train a feed-forward neural network to classify applicants as admitted or not from their scores and ratings.</li><li>Success means accurately separating likely admits from unlikely ones on applicants the model has never seen.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Raw Data] --> B[Clean & Encode]
+  B --> C[EDA]
+  C --> D[Train/Test Split]
+  D --> E["CNN"]
+  E --> F["Tune (Cross-Validation)"]
+  F --> G["Evaluate: R2 / RMSE"]</pre></section>
+<section class="card"><h2>The Data</h2>
+<p class="plain">We used a clean dataset of 500 past applicants, each described by their test scores and academic ratings.</p>
+<ul><li>500 applicant records with 8 columns, all numeric, and no missing values to clean up.</li><li>Features include GRE, TOEFL, University Rating, SOP, LOR, CGPA, and research experience.</li><li>Average GRE was ~316 of 340 and average TOEFL ~107 of 120, with some students scoring full marks.</li><li>Serial number was dropped, and the continuous Chance of Admit was converted into the binary Admit target.</li><li>Data was split 80:20 into training and test sets, with numeric features scaled and ratings one-hot encoded.</li></ul>
+</section><section class="card"><h2>Exploratory Analysis</h2>
+<p class="plain">We charted the data to see how test scores and ratings relate to each other and to admission.</p>
+<ul><li>GRE and TOEFL scores move together: students who score high on one tend to score high on the other.</li><li>As GRE and TOEFL rise, the strength of the statement of purpose (SOP) also tends to increase.</li><li>Scatter plots show a visible separation between students who were admitted and those who were not.</li><li>Higher university ratings line up with higher CGPA and stronger overall admission chances.</li><li>Boxplots confirm admitted students carry higher CGPA than those who were not admitted.</li></ul>
+<div class="figs"><img src="assets/graduate-admission-prediction/fig1.png" loading="lazy"><img src="assets/graduate-admission-prediction/fig2.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Drivers of Admission</h2>
+<p class="plain">A few academic measures stood out as the strongest signals of who gets in.</p>
+<ul><li>CGPA is the clearest differentiator: admitted students consistently show higher grades.</li><li>Strong, correlated GRE and TOEFL scores mark the most competitive applicants.</li><li>University rating, SOP strength, and CGPA all rise together, reinforcing one another.</li><li>Correlation heatmap confirms CGPA, GRE, and TOEFL are the most tightly linked to admission.</li><li>Research experience and recommendation strength add supporting, secondary signal.</li></ul>
+<div class="figs"><img src="assets/graduate-admission-prediction/fig3.png" loading="lazy"></div>
+</section><section class="card"><h2>Modeling & Results</h2>
+<p class="plain">We built and tuned a neural network until it reliably predicted admission about 95% of the time.</p>
+<ul><li>Started with a feed-forward network of 2 hidden layers plus an output layer, training 9,857 parameters.</li><li>Compiled with binary cross-entropy loss and tuned optimizers, layer count, neurons, and learning rate.</li><li>Accuracy-vs-epoch curves showed training accuracy rising and stabilizing well after 150 epochs.</li><li>The final tuned model reached a generalized 95% accuracy on both training and validation data.</li><li>On unseen test data it held 95% accuracy, with most precision and recall metrics above 90%.</li></ul>
+<div class="figs"><img src="assets/graduate-admission-prediction/fig4.png" loading="lazy"><img src="assets/graduate-admission-prediction/fig5.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">The model gives a dependable, automated read on which applicants are likely to be admitted.</p>
+<ul><li>A tuned neural network classifies admission likelihood with 95% accuracy on completely unseen applicants.</li><li>CGPA, GRE, and TOEFL scores are the dominant drivers behind a strong admission profile.</li><li>Reframing a continuous chance into a clear yes/no makes the output easy for stakeholders to act on.</li><li>Careful scaling, encoding, and hyper-parameter tuning were key to reaching generalized performance.</li><li>Built with: Python, pandas, NumPy, Matplotlib, Seaborn, scikit-learn, TensorFlow, Keras</li></ul>
+</section>
+<section class="card"><h2>More Visualizations</h2><div class="figs grid"><img src="assets/graduate-admission-prediction/fig6.png" loading="lazy"></div></section>
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li><li><b>tensorflow</b> — deep-learning framework</li><li><b>keras</b> — high-level neural-network API</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

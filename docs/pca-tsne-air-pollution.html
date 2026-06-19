@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unsupervised Pattern Discovery with PCA and t-SNE — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>Unsupervised Pattern Discovery with PCA and t-SNE</h1><p>Compressing high-dimensional education and air-pollution data to reveal hidden structure</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">We wanted to see whether squeezing many measurements down to a few dimensions could reveal natural groupings in the data.</p>
+<ul><li>Many real datasets have so many columns that patterns stay hidden and visualization is impossible.</li><li>Objective: apply PCA and t-SNE to compress two contrasting datasets and surface any underlying structure.</li><li>Dataset A: 777 US colleges with 18 educational and financial attributes.</li><li>Dataset B: 403 daily records with 27 pollutant and meteorological readings spanning ~13 months for a city.</li><li>Goal is to learn when these techniques find clusters and when the data itself simply has none.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Raw Data] --> B[Scale / Standardize]
+  B --> C["Reduce: PCA / t-SNE"]
+  C --> D["Cluster: K-Means / Hierarchical"]
+  D --> E["Evaluate: Elbow / Silhouette"]
+  E --> F[Interpret Clusters]</pre></section>
+<section class="card"><h2>The Data</h2>
+<p class="plain">We cleaned two datasets, dropping useless ID columns and filling in the gaps where readings were missing.</p>
+<ul><li>Education data: 777 rows, no missing values; dropped the unique 'Names' column leaving 17 numeric features.</li><li>Air-pollution data: 403 rows, 27 columns; dropped Date/SrNo and one-hot encoded the categorical Weather field.</li><li>Missing pollution values imputed with mode for categoricals and median/mean for numeric columns.</li><li>PM10 median ran near 250 and PM2.5 near 108 ug/m3, well above healthy norms of ~100 and ~60.</li><li>All features standardized (scaled) before PCA and t-SNE so no single variable dominates.</li></ul>
+<div class="figs"><img src="assets/pca-tsne-air-pollution/fig1.png" loading="lazy"><img src="assets/pca-tsne-air-pollution/fig2.png" loading="lazy"></div>
+</section><section class="card"><h2>Exploratory Analysis</h2>
+<p class="plain">Before reducing anything, we checked how each measurement was distributed and which ones moved together.</p>
+<ul><li>Boxplots showed Apps, Accept, Enroll, FUndergrad, Books, Personal and Expend are highly right-skewed with many outliers.</li><li>Pollution variables PDCO, PDSO2, NH3, PDPM2.5, NOx and PM2.5 were also strongly right-skewed.</li><li>Strong positive correlations: Apps-Accept-Enroll-FUndergrad cluster, and PhD-Terminal, Top10perc-Top25perc.</li><li>In pollution data NO2-PDNO2 and PM2.5/PM10-PDPM2.5 were tightly correlated; Temp and NO2 were negatively related.</li><li>Heavy correlation between features signaled real redundancy that PCA could exploit.</li></ul>
+<div class="figs"><img src="assets/pca-tsne-air-pollution/fig3.png" loading="lazy"><img src="assets/pca-tsne-air-pollution/fig4.png" loading="lazy"></div>
+</section><section class="card"><h2>Dimensionality Reduction (PCA)</h2>
+<p class="plain">PCA recombined the columns into a handful of summary scores that still carry most of the information.</p>
+<ul><li>On the education data, 17 features collapsed to 4 principal components capturing ~70% of total variance.</li><li>That is roughly a 76% reduction in dimensionality with little information lost.</li><li>Each component is a weighted blend of originals, e.g. PC1 loads heavily on Top10perc, Outstate, PhD and Expend.</li><li>For pollution, PC1 tracked combustion hydrocarbons (Benzene, Toluene, Xylene); PC2 tracked humidity, ozone and rain.</li><li>Scree and loading plots confirmed the first components carry the dominant signal.</li></ul>
+<div class="figs"><img src="assets/pca-tsne-air-pollution/fig5.png" loading="lazy"><img src="assets/pca-tsne-air-pollution/fig6.png" loading="lazy"></div>
+</section><section class="card"><h2>Visualization & Clusters (t-SNE)</h2>
+<p class="plain">t-SNE laid the data out on a flat map so we could literally see which records group together.</p>
+<ul><li>t-SNE preserves local structure, embedding the high-dimensional data into 2D and 3D maps.</li><li>Education data showed no clusters at any perplexity, points stayed scattered with no underlying pattern.</li><li>Pollution data was different: perplexity values of 35 and 45 captured clear structure.</li><li>At perplexity 35 the pollution map separated into 4 distinct, well-defined groups.</li><li>Lesson: whether projections reveal clusters depends on the nature of the data and on tuning perplexity.</li></ul>
+<div class="figs"><img src="assets/pca-tsne-air-pollution/fig7.png" loading="lazy"><img src="assets/pca-tsne-air-pollution/fig8.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">PCA shrank the data efficiently and t-SNE exposed four real pollution profiles, but only where structure truly existed.</p>
+<ul><li>PCA cut education features by ~76% (17 to 4 components) while retaining ~70% of variance.</li><li>t-SNE at perplexity 35 revealed 4 interpretable pollution groups, e.g. Group 1 = hot, humid, low-wind, rain-washed areas.</li><li>Identical methods found nothing in the education data, proving patterns are a property of the data, not the algorithm.</li><li>Perplexity is a critical knob; the wrong setting hides genuine clusters.</li><li>Built with: Python, pandas, NumPy, scikit-learn, Matplotlib, Seaborn</li></ul>
+</section>
+<section class="card"><h2>More Visualizations</h2><div class="figs grid"><img src="assets/pca-tsne-air-pollution/fig9.png" loading="lazy"><img src="assets/pca-tsne-air-pollution/fig10.png" loading="lazy"><img src="assets/pca-tsne-air-pollution/fig11.png" loading="lazy"><img src="assets/pca-tsne-air-pollution/fig12.png" loading="lazy"></div></section>
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

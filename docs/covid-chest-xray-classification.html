@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>COVID-19 Chest X-Ray Classification — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>COVID-19 Chest X-Ray Classification</h1><p>A CNN decision-aid that triages chest X-rays into COVID, Normal, and Viral Pneumonia</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">We taught a computer to look at a chest X-ray and flag whether it looks like COVID, normal lungs, or another type of pneumonia.</p>
+<ul><li>COVID-19 spread faster than radiologists could read scans, creating demand for fast automated triage support.</li><li>Goal: classify each chest X-ray into one of three categories - COVID, Normal, or Viral Pneumonia.</li><li>Framed as a decision-aid that prioritizes and flags scans for clinicians, not as a standalone diagnosis.</li><li>Class imbalance matters here, so the model is judged on Precision and Recall, not accuracy alone.</li><li>Misses are asymmetric: calling a true COVID case 'Normal' is the costly error we most want to avoid.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Image Dataset] --> B[Resize / Normalize / Augment]
+  B --> C["CNN: Conv + Pooling layers"]
+  C --> D[Dense + Softmax]
+  D --> E[Train w/ Early Stopping]
+  E --> F["Evaluate: Accuracy and Confusion Matrix"]</pre></section>
+<section class="card"><h2>The Data (X-ray Images)</h2>
+<p class="plain">We started with a few hundred labeled chest X-ray pictures, each already tagged with its true condition.</p>
+<ul><li>251 labeled chest X-ray images stored as a 4-D NumPy array of pixel intensities.</li><li>Each image arrives at 128x128 pixels across 3 color channels.</li><li>Three target classes: COVID, Normal, and Viral Pneumonia.</li><li>Data is mildly imbalanced - the COVID category has somewhat more images than the other two.</li><li>Imbalance drove the choice of Precision/Recall as the primary evaluation metrics.</li></ul>
+<div class="figs"><img src="assets/covid-chest-xray-classification/fig1.png" loading="lazy"><img src="assets/covid-chest-xray-classification/fig2.png" loading="lazy"></div>
+</section><section class="card"><h2>Sample Images & Preprocessing</h2>
+<p class="plain">We shrank every X-ray to a smaller size and put all the pixel values on the same scale so the model could learn efficiently.</p>
+<ul><li>Visualized random samples by converting NumPy arrays back to images with Matplotlib imshow.</li><li>Resized images from 128x128 down to 64x64 to cut training cost on the small dataset.</li><li>Split 90% train / 10% test (225 training, 26 test images) via scikit-learn train_test_split.</li><li>Normalized pixels by dividing by 255 so all values fall in the 0-1 range.</li><li>One-hot encoded the 3 labels to match a 3-neuron Softmax output layer.</li></ul>
+<div class="figs"><img src="assets/covid-chest-xray-classification/fig3.png" loading="lazy"></div>
+</section><section class="card"><h2>CNN Architecture</h2>
+<p class="plain">The model is built from layers that scan the X-ray for patterns, then a final layer that votes on the most likely condition.</p>
+<ul><li>Sequential CNN: feature-extraction conv/pool layers feeding fully-connected classification layers.</li><li>Base model used two Conv2D layers (128 then 64 filters, 3x3) with MaxPooling, Dropout, and ~208K params.</li><li>Softmax output of 3 neurons returns a probability for each class.</li><li>Base model underfit, so a second model added BatchNormalization, data augmentation, and ReduceLROnPlateau.</li><li>Finally tested VGG16 transfer learning (ImageNet weights, frozen base) with custom Dense 256/128 head.</li></ul>
+<div class="figs"><img src="assets/covid-chest-xray-classification/fig4.png" loading="lazy"></div>
+</section><section class="card"><h2>Results & Accuracy</h2>
+<p class="plain">The first simple model guessed poorly, but adding tricks and a pre-trained network made the predictions much more reliable.</p>
+<ul><li>Base CNN was unstable, with both training and validation accuracy stuck around 50% - it underfit the data.</li><li>Confusion matrix showed Normal and Viral Pneumonia frequently misclassified into each other.</li><li>Augmented model trended up to ~85-93% training accuracy but sometimes mislabeled COVID cases as Normal - unacceptable.</li><li>VGG16 transfer-learning model was the best, predicting most classes correctly with minimum misclassifications.</li><li>Sample predictions confirmed the stronger models labeled held-out X-rays correctly and generalized better.</li></ul>
+<div class="figs"><img src="assets/covid-chest-xray-classification/fig5.png" loading="lazy"><img src="assets/covid-chest-xray-classification/fig6.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">Pre-trained image networks gave the best, most trustworthy results, but a tool like this should support doctors rather than replace them.</p>
+<ul><li>CNNs preserve the spatial structure of images and beat flattening-based ANN/ML approaches on X-rays.</li><li>Transfer learning (VGG16) plus data augmentation delivered the strongest, most generalized model.</li><li>On medical data, a false 'Normal' for a true COVID case is potentially fatal - recall is the metric that matters.</li><li>Position the model as a triage decision-aid for radiologists, never as an autonomous diagnosis.</li><li>Built with: TensorFlow, Keras, scikit-learn, NumPy, pandas, OpenCV, Matplotlib, Seaborn.</li></ul>
+</section>
+<section class="card"><h2>More Visualizations</h2><div class="figs grid"><img src="assets/covid-chest-xray-classification/fig7.png" loading="lazy"><img src="assets/covid-chest-xray-classification/fig8.png" loading="lazy"><img src="assets/covid-chest-xray-classification/fig9.png" loading="lazy"><img src="assets/covid-chest-xray-classification/fig10.png" loading="lazy"></div></section>
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li><li><b>tensorflow</b> — deep-learning framework</li><li><b>keras</b> — high-level neural-network API</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

@@ -1,0 +1,43 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Food Image Classification with CNNs — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>Food Image Classification with CNNs</h1><p>Teaching a convolutional neural network to tell Bread, Soup, and Vegetable-Fruit apart</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">We taught a computer to look at a photo of food and decide which of three food types it is.</p>
+<ul><li>Goal: classify food photos into three categories - Bread, Soup, and Vegetable-Fruit - directly from raw pixels.</li><li>Image classification is a core deep learning task enabled by larger datasets and modern compute.</li><li>Approach: build and compare convolutional neural networks (CNNs) that learn visual features end to end.</li><li>Success means high test accuracy with few confusions between visually similar food classes.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Image Dataset] --> B[Resize / Normalize / Augment]
+  B --> C["CNN: Conv + Pooling layers"]
+  C --> D[Dense + Softmax]
+  D --> E[Train w/ Early Stopping]
+  E --> F["Evaluate: Accuracy and Confusion Matrix"]</pre></section>
+<section class="card"><h2>The Data</h2>
+<p class="plain">We started with folders of food photos already sorted into training and testing piles.</p>
+<ul><li>Three balanced classes: Bread, Soup, and Vegetable-Fruit, organized into Training and Testing folders.</li><li>Each image is read into a NumPy array and paired with its class index as a labeled tuple.</li><li>Labels are one-hot encoded so each class becomes a vector, e.g. Bread = [1, 0, 0].</li><li>Class distribution was checked to confirm the three categories are reasonably balanced.</li><li>Images are resized to a common 150x150x3 RGB shape for the network input.</li></ul>
+</section><section class="card"><h2>Sample Images & Preprocessing</h2>
+<p class="plain">We looked at example pictures from each food type and cleaned them up before training.</p>
+<ul><li>Bread items are mostly round, oval, or elliptical and often show grilled or charred portions.</li><li>Soup images feature liquid in a container or utensil, with a distinct glare from light reflection.</li><li>Vegetable-Fruit images stand out with vibrant colors and repeating shapes across the frame.</li><li>Pixel values are normalized to speed up training and reduce the risk of getting stuck in local optima.</li><li>Utensils appearing in both Bread and Soup photos were flagged as a likely source of confusion.</li></ul>
+<div class="figs"><img src="assets/food-image-classification/fig1.png" loading="lazy"><img src="assets/food-image-classification/fig2.png" loading="lazy"><img src="assets/food-image-classification/fig3.png" loading="lazy"></div>
+</section><section class="card"><h2>CNN Architecture</h2>
+<p class="plain">We built two layered networks, the second one designed to avoid memorizing the training photos.</p>
+<ul><li>Model 1: three convolutional blocks, each a Conv2D + MaxPooling2D layer, starting at 64 filters with 3x3 kernels.</li><li>Model 1 learns about 1,185,107 parameters with relu activations and 'same' padding - large and prone to overfitting.</li><li>Model 2: four convolutional blocks adding a Dropout layer after each, starting at 256 filters with 5x5 kernels.</li><li>Model 2 trains about 1,099,171 parameters; Dropout randomly disables neurons to curb overfitting.</li><li>Note: this run used a reduced 2-epoch schedule for speed, so accuracy figures are indicative, not final.</li></ul>
+</section><section class="card"><h2>Results & Accuracy</h2>
+<p class="plain">The second network did a noticeably better job and confused fewer photos than the first.</p>
+<ul><li>Model 1 overfit: training accuracy climbed steadily while validation accuracy lagged behind.</li><li>In the full run Model 1 reached roughly 70% test accuracy, often mistaking Bread for Soup.</li><li>Adding Dropout in Model 2 closed the train-validation gap and reduced misclassifications.</li><li>Bread vs Soup stayed the hardest pair due to shared dishes and utensils, but errors dropped clearly.</li><li>With the reduced 2-epoch re-run, curves and confusion matrices show the same qualitative trend, just lower numbers.</li></ul>
+<div class="figs"><img src="assets/food-image-classification/fig4.png" loading="lazy"><img src="assets/food-image-classification/fig5.png" loading="lazy"><img src="assets/food-image-classification/fig6.png" loading="lazy"><img src="assets/food-image-classification/fig7.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">A well-regularized CNN can reliably sort food photos, and there is still room to push accuracy higher.</p>
+<ul><li>Model 2 was the better classifier, correctly predicting a randomly chosen test image.</li><li>Dropout and a deeper architecture were the key levers that improved generalization over Model 1.</li><li>Visually similar classes that share objects (Bread/Soup utensils) remain the main error source.</li><li>Next steps: more epochs, alternative architectures, and different optimizers to lift test accuracy further.</li><li>Built with: TensorFlow, Keras, NumPy, Matplotlib, scikit-learn</li></ul>
+<div class="figs"><img src="assets/food-image-classification/fig8.png" loading="lazy"></div>
+</section>
+
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li><li><b>tensorflow</b> — deep-learning framework</li><li><b>keras</b> — high-level neural-network API</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

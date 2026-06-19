@@ -1,0 +1,45 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SuperKart Retail Sales Forecasting — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>SuperKart Retail Sales Forecasting</h1><p>Predicting per-product store sales for the upcoming quarter with linear regression</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">SuperKart wants to forecast how much revenue each product will bring in at each store next quarter.</p>
+<ul><li>SuperKart, a supermarket chain, needs accurate quarterly sales forecasts to plan inventory, staffing, and revenue targets.</li><li>Goal: predict Product_Store_Sales_Total, the revenue a given product generates at a given outlet.</li><li>A reliable forecast turns historical sales into a planning tool for the next quarter across all 4 stores.</li><li>Framed as a supervised regression problem on product and store attributes.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Raw Data] --> B[Clean & Encode]
+  B --> C[EDA]
+  C --> D[Train/Test Split]
+  D --> E["Linear Regression"]
+  E --> F["Tune (Cross-Validation)"]
+  F --> G["Evaluate: R2 / RMSE"]</pre></section>
+<section class="card"><h2>The Data</h2>
+<p class="plain">I worked with about 8,800 product-store sales records covering product details and store characteristics.</p>
+<ul><li>8,763 records across 12 columns, with no missing values and no duplicate rows.</li><li>Numeric features: Product_Weight, Product_Allocated_Area, Product_MRP, Store_Establishment_Year, plus the sales target.</li><li>Categorical features: Product_Sugar_Content, Product_Type (16 types), Store_Id, Store_Size, Store_Location_City_Type, Store_Type.</li><li>Cleaned messy labels (merged 'reg' into 'Regular') and dropped the unique Product_Id identifier.</li><li>Target sales range from 33 to ~8000, roughly normal around 3500.</li></ul>
+<div class="figs"><img src="assets/superkart-sales-practice-project/fig1.png" loading="lazy"><img src="assets/superkart-sales-practice-project/fig2.png" loading="lazy"></div>
+</section><section class="card"><h2>Exploratory Analysis</h2>
+<p class="plain">I explored how each product and store feature relates to sales before building any model.</p>
+<ul><li>Product_Weight and Product_MRP are the features most strongly correlated with total sales.</li><li>Store_Establishment_Year is strongly negatively related to sales, so newer stores tend to sell more.</li><li>Low-sugar products make up ~56% of items and drive the most revenue; no-sugar items contribute least.</li><li>Fruits & Vegetables (14%) and Snack Foods (13%) are the top product types; Seafood is the smallest (~1%).</li><li>Outliers were retained as legitimate values rather than removed.</li></ul>
+<div class="figs"><img src="assets/superkart-sales-practice-project/fig3.png" loading="lazy"><img src="assets/superkart-sales-practice-project/fig4.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Drivers of Sales</h2>
+<p class="plain">A handful of store and product traits explain most of the differences in sales.</p>
+<ul><li>OUT004 (Supermarket Type2, Tier 2, medium) is the top performer at ~15.4M revenue, more than double any other store.</li><li>OUT002 (small Food Mart, Tier 3) is the weakest store at ~2.0M revenue.</li><li>Medium-sized stores and Tier 2 city locations contribute the bulk of company revenue.</li><li>Product_MRP and Product_Weight are the dominant numeric drivers of per-product sales.</li><li>Engineered Store_Age_Years and grouped 16 product types into perishable vs non-perishable.</li></ul>
+<div class="figs"><img src="assets/superkart-sales-practice-project/fig5.png" loading="lazy"><img src="assets/superkart-sales-practice-project/fig6.png" loading="lazy"></div>
+</section><section class="card"><h2>Modeling & Results</h2>
+<p class="plain">I built a linear regression model that predicts sales accurately and passes statistical checks.</p>
+<ul><li>OLS linear regression after one-hot encoding, VIF multicollinearity checks (drop features VIF >= 5), and dropping insignificant variables (p > 0.05).</li><li>Model achieves R-squared of 0.824 (Adj. 0.823) on the full fit.</li><li>Test performance: RMSE ~447, MAE ~267, R2 ~0.79, with train and test scores nearly identical (no overfitting).</li><li>All four regression assumptions held: zero-mean residuals, homoscedasticity, linearity, and normal errors.</li><li>Cross-validation confirmed stable, comparable performance across folds.</li></ul>
+<div class="figs"><img src="assets/superkart-sales-practice-project/fig7.png" loading="lazy"><img src="assets/superkart-sales-practice-project/fig8.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">The model can forecast next quarter's sales and points to where SuperKart should focus.</p>
+<ul><li>The final model explains about 79% of the variation in product-store sales and is ready for quarterly forecasting.</li><li>OUT004's Supermarket Type2 / Tier 2 / medium-size formula is the strongest blueprint for expansion.</li><li>Boost the underperforming OUT002 and lean into Fruits & Vegetables and Snack Foods, the top revenue categories.</li><li>Product_MRP and Product_Weight are the levers most tied to sales and should guide pricing and assortment.</li><li>Built with: pandas, numpy, matplotlib, seaborn, scikit-learn, statsmodels, scipy</li></ul>
+</section>
+<section class="card"><h2>More Visualizations</h2><div class="figs grid"><img src="assets/superkart-sales-practice-project/fig9.png" loading="lazy"><img src="assets/superkart-sales-practice-project/fig10.png" loading="lazy"><img src="assets/superkart-sales-practice-project/fig11.png" loading="lazy"><img src="assets/superkart-sales-practice-project/fig12.png" loading="lazy"></div></section>
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li><li><b>statsmodels</b> — OLS / statistical inference & VIF</li><li><b>scipy</b> — scientific computing</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

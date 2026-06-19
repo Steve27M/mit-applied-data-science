@@ -1,0 +1,45 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Predicting Employee Attrition at McCurr Health Consultancy — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>Predicting Employee Attrition at McCurr Health Consultancy</h1><p>An end-to-end classification pipeline to flag at-risk employees before they leave</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">We built a tool that predicts which employees are likely to quit so the company can act early to keep them.</p>
+<ul><li>McCurr Health Consultancy spends heavily to retain talent, yet ~16% of its workforce still attrites.</li><li>Goal: predict which employees will leave so HR can intervene before resignations happen.</li><li>Recall on leavers is the priority metric: missing a true leaver (false negative) is the costliest error.</li><li>Framed as a supervised binary classification problem on labeled HR records.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Raw Data] --> B[Clean & Encode]
+  B --> C[EDA]
+  C --> D[Train/Test Split]
+  D --> E["Random Forest / Decision Tree / XGBoost / Gradient Boosting"]
+  E --> F["Tune (Cross-Validation)"]
+  F --> G["Evaluate: Recall / F1 / ROC"]
+  G --> H[Interpret]</pre></section>
+<section class="card"><h2>The Data</h2>
+<p class="plain">We started with HR records for nearly 3,000 employees described by dozens of personal and job-related details.</p>
+<ul><li>2,940 employee records across 34 columns, with zero missing values throughout.</li><li>Dropped non-informative fields: EmployeeNumber (unique ID), Over18 and StandardHours (single value).</li><li>Mix of numeric drivers (age, income, distance, tenure) and categorical factors (overtime, travel, role).</li><li>Categorical variables one-hot encoded; data split 70% train / 30% test before modeling.</li></ul>
+</section><section class="card"><h2>Exploratory Analysis</h2>
+<p class="plain">We profiled the workforce to understand who works there and where early warning signs of leaving appear.</p>
+<ul><li>Average employee age is ~37, ranging 18 to 60, showing strong age diversity across the organization.</li><li>Age is near-normally distributed; DistanceFromHome, MonthlyIncome and tenure are right-skewed.</li><li>Roughly 28% of employees work overtime, a high share that may signal a stressed work-life balance.</li><li>71% travel rarely and ~19% travel frequently; baseline attrition sits at about 16%.</li></ul>
+<div class="figs"><img src="assets/employee-attrition-prediction/fig1.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Drivers of Attrition</h2>
+<p class="plain">The models agree that overtime, low pay, younger age, and short tenure are the biggest red flags for quitting.</p>
+<ul><li>OverTime is consistently the single strongest predictor of attrition across all models.</li><li>MonthlyIncome, Age, and TotalWorkingYears round out the top drivers of who leaves.</li><li>Profile of risk: employees doing overtime with low salaries and limited experience tend to leave.</li><li>Secondary signals include DailyRate, DistanceFromHome, StockOptionLevel, and YearsAtCompany.</li></ul>
+<div class="figs"><img src="assets/employee-attrition-prediction/fig2.png" loading="lazy"><img src="assets/employee-attrition-prediction/fig3.png" loading="lazy"></div>
+</section><section class="card"><h2>Modeling & Results</h2>
+<p class="plain">We tested several models and the tuned Random Forest best balanced catching real leavers without too many false alarms.</p>
+<ul><li>Built Decision Tree and Random Forest models; untuned versions hit 100% on training but overfit.</li><li>GridSearch tuning reduced Decision Tree overfitting but cut precision sharply (0.75 to 0.29).</li><li>Tuned Random Forest is the best model, reaching ~83% recall on leavers on the held-out test set.</li><li>Boosting models (AdaBoost, XGBoost) were also compared; XGBoost scored well among ensembles.</li></ul>
+<div class="figs"><img src="assets/employee-attrition-prediction/fig4.png" loading="lazy"><img src="assets/employee-attrition-prediction/fig5.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">HR can now flag likely leavers in advance and focus retention efforts on overtime and pay.</p>
+<ul><li>The tuned Random Forest catches ~83% of employees who will actually attrite on unseen data.</li><li>Top lever: reduce excessive overtime to protect work-life balance and lower attrition risk.</li><li>Review compensation, since low MonthlyIncome and DailyRate strongly correlate with leaving.</li><li>Deploy the model to score employees ahead of time and target retention spend where it matters.</li><li>Built with: pandas, numpy, matplotlib, seaborn, scikit-learn, XGBoost</li></ul>
+</section>
+<section class="card"><h2>More Visualizations</h2><div class="figs grid"><img src="assets/employee-attrition-prediction/fig6.png" loading="lazy"><img src="assets/employee-attrition-prediction/fig7.png" loading="lazy"><img src="assets/employee-attrition-prediction/fig8.png" loading="lazy"><img src="assets/employee-attrition-prediction/fig9.png" loading="lazy"></div></section>
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li><li><b>xgboost</b> — gradient-boosted trees</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

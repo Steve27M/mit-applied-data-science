@@ -1,0 +1,43 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Audio MNIST: Spoken-Digit Recognition with a Neural Network — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>Audio MNIST: Spoken-Digit Recognition with a Neural Network</h1><p>Classifying spoken digits 0-9 from raw .wav audio using MFCC features and a Keras ANN</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">We taught a computer to listen to someone say a number from zero to nine and correctly recognize which digit was spoken.</p>
+<ul><li>Speech recognition is a core deep-learning application; the goal here is recognizing spoken digits 0-9 from raw audio.</li><li>Input is short .wav recordings of people pronouncing single digits, spanning many speakers, pitches, and timbres.</li><li>Objective: build a classifier that maps an audio clip to one of 10 digit classes regardless of who is speaking.</li><li>Challenge is converting variable-length sound waves into a fixed, model-ready numeric representation.</li><li>Framed as a 10-class supervised classification task evaluated on held-out audio.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Image Dataset] --> B[Resize / Normalize / Augment]
+  B --> C["CNN: Conv + Pooling layers"]
+  C --> D[Dense + Softmax]
+  D --> E[Train w/ Early Stopping]
+  E --> F["Evaluate: Accuracy and Confusion Matrix"]</pre></section>
+<section class="card"><h2>The Data (Audio)</h2>
+<p class="plain">The data is thousands of short sound clips of people saying digits, which we first looked at as wiggly waveforms.</p>
+<ul><li>Dataset of 5,000 spoken-digit .wav clips covering all 10 classes (0-9) from multiple speakers.</li><li>Audio loaded with librosa and resampled to a standard 22,050 Hz sample rate for consistency.</li><li>Each waveform plots time on the X-axis against amplitude on the Y-axis of the sound vibration.</li><li>Spectrograms reveal how signal strength is distributed across frequency and time within each clip.</li><li>Clips vary in length, motivating a feature step that yields a fixed-size vector per recording.</li></ul>
+<div class="figs"><img src="assets/audio-mnist-recognition/fig1.png" loading="lazy"><img src="assets/audio-mnist-recognition/fig2.png" loading="lazy"><img src="assets/audio-mnist-recognition/fig3.png" loading="lazy"><img src="assets/audio-mnist-recognition/fig4.png" loading="lazy"></div>
+</section><section class="card"><h2>Feature Extraction (MFCC)</h2>
+<p class="plain">Instead of feeding raw sound in, we summarized each clip into 40 numbers that capture the shape of its sound.</p>
+<ul><li>Mel-Frequency Cepstral Coefficients (MFCCs) are the standard audio features for ML on speech.</li><li>librosa.feature.mfcc extracts 40 coefficients per time step from each resampled waveform.</li><li>Per-clip features averaged across time, collapsing variable-length audio into a fixed 40-value vector.</li><li>MFCC spectrograms show patterns unique to each digit, so similar sounds yield similar features regardless of speaker.</li><li>The result is a clean tabular dataset of 40 features per sample ready for the neural network.</li></ul>
+<div class="figs"><img src="assets/audio-mnist-recognition/fig5.png" loading="lazy"></div>
+</section><section class="card"><h2>Model Architecture</h2>
+<p class="plain">We used a simple neural network with several layers of artificial neurons to learn the digit from the 40 features.</p>
+<ul><li>Feed-forward Artificial Neural Network (ANN) built with Keras Sequential since spatial locality is not needed for averaged MFCCs.</li><li>Three hidden Dense layers of 100 ReLU neurons each, taking the 40-feature input vector.</li><li>Output is a 10-neuron softmax layer producing a probability for each digit class.</li><li>Compiled with the Adam optimizer and sparse categorical cross-entropy loss.</li><li>Data split 75/25 into 3,750 training and 1,250 test samples; ModelCheckpoint saves the best model.</li></ul>
+</section><section class="card"><h2>Results</h2>
+<p class="plain">Even after a short training run, the network correctly identified the spoken digit most of the time.</p>
+<ul><li>Deck was re-run with reduced epochs (3) for speed, so accuracy reflects a brief training budget.</li><li>Test accuracy reached roughly the mid-80s percent, with validation accuracy climbing across epochs.</li><li>Several digits (5, 6, 7) achieved near-perfect precision and recall on the test set.</li><li>Confusion matrix shows most clips classified correctly, with a few mix-ups (e.g. some 0s predicted as 2).</li><li>Performance would improve further with more training epochs and tuning.</li></ul>
+<div class="figs"><img src="assets/audio-mnist-recognition/fig6.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">Turning sound into the right summary features let a small, simple network recognize spoken digits well.</p>
+<ul><li>MFCC feature engineering is the key step that makes audio classification tractable for a basic ANN.</li><li>Averaging MFCCs over time gives speaker-invariant, fixed-length inputs that generalize across voices.</li><li>A compact 3-layer network reaches strong accuracy, showing heavy CNNs are not always required.</li><li>More epochs and hyperparameter tuning are the clearest path to closing the remaining error gap.</li><li>Built with: librosa, NumPy, pandas, scikit-learn, Matplotlib, and TensorFlow/Keras.</li></ul>
+</section>
+<section class="card"><h2>More Visualizations</h2><div class="figs grid"><img src="assets/audio-mnist-recognition/fig7.png" loading="lazy"><img src="assets/audio-mnist-recognition/fig8.png" loading="lazy"><img src="assets/audio-mnist-recognition/fig9.png" loading="lazy"><img src="assets/audio-mnist-recognition/fig10.png" loading="lazy"></div></section>
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li><li><b>tensorflow</b> — deep-learning framework</li><li><b>keras</b> — high-level neural-network API</li><li><b>librosa</b> — audio feature extraction (MFCC)</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

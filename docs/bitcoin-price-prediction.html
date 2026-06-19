@@ -1,0 +1,45 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bitcoin Price Prediction — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>Bitcoin Price Prediction</h1><p>Forecasting monthly Bitcoin closing prices with classical time-series models</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">We tried to predict where Bitcoin's price would go next using only its own price history.</p>
+<ul><li>Bitcoin is a volatile, decentralized cryptocurrency whose price has risen and fluctuated dramatically since 2017.</li><li>Goal: forecast monthly Bitcoin closing prices using only the historical price series itself.</li><li>Approach: classical univariate time-series modeling (AR, MA, ARMA, ARIMA).</li><li>Hold out the last 12 months as a test set to honestly measure out-of-sample forecast accuracy.</li><li>Challenge acknowledged up front: extreme volatility limits how far a price-only model can see.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Raw Data] --> B[Clean & Encode]
+  B --> C[EDA]
+  C --> D[Train/Test Split]
+  D --> E["Models"]
+  E --> F["Tune (Cross-Validation)"]
+  F --> G["Evaluate: R2 / RMSE"]</pre></section>
+<section class="card"><h2>The Data</h2>
+<p class="plain">We worked with about nine years of monthly Bitcoin closing prices, with no gaps in the record.</p>
+<ul><li>Dataset has 112 monthly observations across 2 columns: Timestamp and closing price.</li><li>Timestamp was object-typed and converted to datetime, then set as the series index.</li><li>Closing price stored as float; no missing values anywhere in the dataset.</li><li>Split: final 12 months held out as test data, the rest used for training.</li><li>Prices show a strong upward trend with rapid fluctuations, especially during 2021.</li></ul>
+<div class="figs"><img src="assets/bitcoin-price-prediction/fig1.png" loading="lazy"></div>
+</section><section class="card"><h2>Exploratory Analysis</h2>
+<p class="plain">We checked whether the price pattern was stable over time, and it clearly was not.</p>
+<ul><li>Rolling mean and standard deviation revealed a clear upward trend, signaling a non-stationary series.</li><li>Augmented Dickey-Fuller test gave a p-value of about 0.36, far above 0.05.</li><li>We failed to reject the null hypothesis, confirming the raw series is non-stationary.</li><li>Decomposition exposed distinct trend, seasonality, and residual components.</li><li>Seasonality showed prices spiking from December to January, then declining steadily through May.</li></ul>
+<div class="figs"><img src="assets/bitcoin-price-prediction/fig2.png" loading="lazy"><img src="assets/bitcoin-price-prediction/fig3.png" loading="lazy"></div>
+</section><section class="card"><h2>Time-Series Patterns</h2>
+<p class="plain">We transformed the data until the price pattern became stable enough to model.</p>
+<ul><li>Log transformation stabilized variance but left the upward trend intact, so still non-stationary.</li><li>Differencing by lag 1 (one month) produced a constant mean and standard deviation.</li><li>Post-differencing ADF p-value fell well below 0.05, confirming the series was now stationary.</li><li>PACF plot's last significant lag was 7, suggesting an AR order of p = 7.</li><li>ACF plot similarly indicated q = 7, setting the orders for the ARMA and ARIMA models.</li></ul>
+<div class="figs"><img src="assets/bitcoin-price-prediction/fig4.png" loading="lazy"><img src="assets/bitcoin-price-prediction/fig5.png" loading="lazy"></div>
+</section><section class="card"><h2>Modeling & Results</h2>
+<p class="plain">We compared four forecasting models and the ARMA model gave the most accurate predictions.</p>
+<ul><li>AR model (p=7) achieved an RMSE of 0.2112 on the log-differenced series.</li><li>MA model scored a slightly higher RMSE than AR but a lower AIC, fitting the training data better.</li><li>ARMA model (p=7, q=7) delivered the lowest RMSE of all four models.</li><li>ARIMA model (p=7, d=1, q=7) gave the highest RMSE and much higher AIC, so it was dropped.</li><li>ARMA chosen as the final model: best RMSE and second-lowest AIC overall.</li></ul>
+<div class="figs"><img src="assets/bitcoin-price-prediction/fig6.png" loading="lazy"><img src="assets/bitcoin-price-prediction/fig7.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">The model fit history well but struggled to forecast the future, which is expected for such a volatile asset.</p>
+<ul><li>Training-data predictions tracked actual prices closely, except for spikes in 2018 and late 2019.</li><li>On the 12-month test set the forecast drifted far from actuals, with RMSE much higher than training.</li><li>The gap reflects Bitcoin's extreme volatility and external drivers a price-only model cannot capture.</li><li>Honest conclusion: classical models capture trend and seasonality but cannot reliably predict crypto prices.</li><li>Built with: pandas, numpy, matplotlib, statsmodels 0.12.1</li></ul>
+</section>
+<section class="card"><h2>More Visualizations</h2><div class="figs grid"><img src="assets/bitcoin-price-prediction/fig8.png" loading="lazy"><img src="assets/bitcoin-price-prediction/fig9.png" loading="lazy"><img src="assets/bitcoin-price-prediction/fig10.png" loading="lazy"><img src="assets/bitcoin-price-prediction/fig11.png" loading="lazy"></div></section>
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li><li><b>statsmodels</b> — OLS / statistical inference & VIF</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

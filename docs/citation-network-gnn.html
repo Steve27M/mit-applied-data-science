@@ -1,0 +1,40 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Citation Network Classification with Graph Neural Networks — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>Citation Network Classification with Graph Neural Networks</h1><p>Predicting a paper's research topic from how it cites other papers, using a GCN on the Cora dataset</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">We want to guess what topic a research paper is about by looking at which other papers it cites.</p>
+<ul><li>Goal: classify each scientific publication into one of 7 research topics using node classification on a citation graph.</li><li>Standard ML treats each paper independently; here the citation links between papers carry signal we want to exploit.</li><li>A Graph Neural Network learns each node's representation from its own words AND its cited/citing neighbors.</li><li>Only 140 of 2,708 papers are labeled for training, so the model must generalize from a tiny labeled fraction.</li><li>Stretch task: link prediction — given two papers, predict whether a citation edge should exist between them.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A["Graph: Nodes + Edges"] --> B[Node Features]
+  B --> C["Graph Neural Network layers"]
+  C --> D[Train]
+  D --> E["Evaluate: Node-Classification Accuracy"]</pre></section>
+<section class="card"><h2>The Data (Citation Graph)</h2>
+<p class="plain">The data is a web of 2,708 papers connected by who cites whom, with each paper described by the words it uses.</p>
+<ul><li>Cora dataset: 2,708 scientific publications (nodes) linked by 5,429 citation relationships across 7 topic classes.</li><li>Each paper is a 1,433-length binary word vector: a 1 where a dictionary word is present, 0 where absent.</li><li>Citations are directional (a paper cites an earlier one) and there are no self-loops — a paper cannot cite itself.</li><li>Loaded via DGL's CoraGraphDataset, which exposes 10,556 directed edges and per-node feature/label tensors.</li><li>Pre-split into 140 training, 500 validation, and 1,000 test nodes via boolean masks on the single graph.</li></ul>
+</section><section class="card"><h2>Graph Construction</h2>
+<p class="plain">We turn the papers and citations into a graph the computer can read, then draw a slice of it to see the structure.</p>
+<ul><li>The dataset is a single DGLGraph: nodes hold 1,433-dim features plus labels and train/val/test masks; edges encode citations.</li><li>An adjacency view is a 2,708 x 2,708 matrix with an entry wherever one paper cites another (directional, no diagonal).</li><li>Visualization converts a 500-node subgraph to NetworkX and colors each node by its topic label to reveal clustering.</li><li>Graph convolutions pull information along edges, so a paper's neighbors directly shape its learned representation.</li><li>For link prediction, 10% of real edges are held out as positive test cases and matched with sampled non-edges as negatives.</li></ul>
+<div class="figs"><img src="assets/citation-network-gnn/fig1.png" loading="lazy"></div>
+</section><section class="card"><h2>GNN Model</h2>
+<p class="plain">The model blends each paper's words with its neighbors' information over two passes, then picks the most likely topic.</p>
+<ul><li>GCN architecture: GraphConv (1,433 -> 512), LeakyReLU(0.2), Linear (512 -> 512), LeakyReLU, GraphConv (512 -> 7).</li><li>DGL's GraphConv layer handles message passing — aggregating and transforming features from each node's neighbors.</li><li>Trained with Adam (lr=0.003, weight_decay=1e-3) for 100 epochs using cross-entropy on only the 140 training nodes.</li><li>Validation accuracy is tracked each epoch to checkpoint the best model and report its corresponding test accuracy.</li><li>Link-prediction variant swaps in two GraphSAGE (mean) layers plus a dot-product scorer over node embeddings.</li></ul>
+</section><section class="card"><h2>Results</h2>
+<p class="plain">From just 140 labeled papers the model correctly identifies the topic of about 4 out of 5 unseen papers.</p>
+<ul><li>Node classification reaches a best test accuracy of ~80.6% (validation ~80.6%) on the 1,000 held-out papers.</li><li>Accuracy climbs fast — from ~9% to ~80% within the first ~25 epochs — showing the graph signal is highly learnable.</li><li>Only 140 labeled nodes (5% of the graph) were needed, demonstrating the label efficiency of graph convolutions.</li><li>Link prediction with GraphSAGE + dot-product scoring achieves an AUC of 0.87 on held-out citation edges.</li><li>Both tasks confirm that citation structure, not just word content, carries strong predictive signal.</li></ul>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">Connections between papers are powerful predictors, and graph neural networks turn those connections into accurate guesses.</p>
+<ul><li>Graph convolutions let a model learn from relationships, not just isolated feature vectors — ideal for networked data.</li><li>A compact 2-layer GCN generalizes well from very few labels by propagating information across citation edges.</li><li>The same node embeddings support multiple tasks: topic classification (~80.6%) and link/edge prediction (AUC 0.87).</li><li>Approach transfers directly to social, recommendation, and knowledge-graph problems framed as node or link prediction.</li><li>Built with: DGL, PyTorch, NetworkX, scikit-learn, NumPy, and Matplotlib.</li></ul>
+</section>
+
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>matplotlib</b> — plotting</li><li><b>torch</b> — deep-learning framework</li><li><b>dgl</b> — graph neural networks</li><li><b>networkx</b> — graph / network analysis</li><li><b>scipy</b> — scientific computing</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

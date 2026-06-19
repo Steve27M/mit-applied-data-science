@@ -1,0 +1,80 @@
+# ============================================================
+#  Datasets — third-party / Great Learning data, never redistributed
+#  (keeps program use "limited"; notebooks note how to obtain data)
+# ============================================================
+*.csv
+*.xlsx
+*.xls
+*.zip
+*.npy
+*.npz
+*.h5
+*.hdf5
+*.parquet
+*.tsv
+*.fa
+*.dat
+*.json
+*.wav
+*.mp3
+*.flac
+*.ogg
+*.m4a
+
+# Documents & decks — kept LOCAL, not published (content lives in README + site)
+*.pdf
+*.pptx
+*.ppt
+*.docx
+*.doc
+**/data/
+
+# Extracted image datasets
+Rice_Image_Dataset/
+Food_Data/
+brain_tumor*/
+**/*_Dataset/
+**/*_dataset/
+
+# ============================================================
+#  Course materials & provided answer keys — Great Learning IP
+# ============================================================
+_course-materials/
+_exercises/
+0_ Pre-Work/
+**/*Solution*.ipynb
+**/*Reference*.ipynb
+**/*Student*Version*.ipynb
+**/Practice_Exercise_*Solutions*.ipynb
+
+# ============================================================
+#  Personal / private — never publish
+# ============================================================
+_personal-misc/
+_REORG_MANIFEST.csv
+*_backup*.zip
+*RESUME*
+*Resume*
+
+# ============================================================
+#  Environments, caches, build cruft
+# ============================================================
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+best_model.h5
+~$*
+*.tmp
+
+# ============================================================
+#  KEPT (do NOT ignore) — these power the repo & GitHub Pages site:
+#  *.ipynb (your notebooks), README.md, requirements.txt,
+#  figures/*.png, docs/** (site + assets), *.pptx capstone deck
+# ============================================================

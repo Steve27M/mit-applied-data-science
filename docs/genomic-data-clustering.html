@@ -1,0 +1,42 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Genomic Data Clustering: Decoding the Genetic Code — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>Genomic Data Clustering: Decoding the Genetic Code</h1><p>Using unsupervised learning to rediscover that DNA reads in three-letter codons</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">We wanted to see whether a computer could spot hidden patterns in raw DNA without being told what to look for.</p>
+<ul><li>DNA stores all the information a living cell needs, but a raw sequence is just an unbroken string of A, C, G, and T letters.</li><li>With no spaces between words, it is unclear what the meaningful units of the genetic code actually are.</li><li>Objective: let an unsupervised model find structure in the genome of the bacterium Caulobacter crescentus (ccrescentus).</li><li>Success means surfacing biological organization purely from letter patterns, with no labels or prior domain knowledge.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Raw Data] --> B[Scale / Standardize]
+  B --> C["Reduce: PCA / t-SNE"]
+  C --> D["Cluster: K-Means / Hierarchical"]
+  D --> E["Evaluate: Elbow / Silhouette"]
+  E --> F[Interpret Clusters]</pre></section>
+<section class="card"><h2>The Data</h2>
+<p class="plain">The input is a single bacterial genome stored as a plain text file of DNA letters.</p>
+<ul><li>The ccrescentus genome is supplied in FASTA format, the standard text encoding used in bioinformatics.</li><li>We read the file, stripped out headers and unwanted characters, and stored the genome as one continuous string.</li><li>The only alphabet present is the four DNA bases A, C, G, and T, with no natural word boundaries.</li><li>This single long sequence becomes the raw material for building numerical features.</li></ul>
+</section><section class="card"><h2>Approach: From Letters to Features</h2>
+<p class="plain">We turned the DNA text into numbers by counting how often short letter combinations appear, then compressed those counts into a 2-D map.</p>
+<ul><li>Split the genome into fragments and counted the frequency of every possible word for word lengths of 1, 2, 3, and 4 letters.</li><li>Built a frequency matrix (a DataFrame) where each column is a k-mer and each value is its count per fragment.</li><li>Standardized every column with StandardScaler so all features share a common scale for these distance-based methods.</li><li>Applied PCA to reduce the high-dimensional frequency tables to the first two principal components for visualization.</li><li>Tried multiple word lengths because, without domain knowledge, the most meaningful unit was not known in advance.</li></ul>
+<div class="figs"><img src="assets/genomic-data-clustering/fig1.png" loading="lazy"></div>
+</section><section class="card"><h2>Clusters Discovered</h2>
+<p class="plain">When we looked at three-letter words, the data fell into clear, separate groups all on its own.</p>
+<ul><li>Only the 3-letter word frequencies produced clearly identifiable point clouds in the first two principal components.</li><li>Six distinct outer poles emerged, plus a central group of points sitting near the middle.</li><li>Ran K-means clustering on the standardized 3-letter frequency tables with n_clusters set to 7.</li><li>The seventh, central cluster captures fragments far from the six outer centroids, hinting at genes that carry no information.</li><li>1- and 4-letter words showed no comparable structure, isolating 3 letters as the meaningful length.</li></ul>
+<div class="figs"><img src="assets/genomic-data-clustering/fig2.png" loading="lazy"></div>
+</section><section class="card"><h2>Interpretation</h2>
+<p class="plain">The three-letter groups the model found match the codons that biology already knows DNA is read in.</p>
+<ul><li>These 3-letter words are exactly what biologists call codons, the units the cell reads to build proteins.</li><li>Six clean clusters correspond to reading-frame and strand structure inherent in how codons are arranged.</li><li>The central cluster aligns with non-coding stretches that do not translate into a clear codon signal.</li><li>An unsupervised model independently recovered a known biological fact straight from raw letter statistics.</li></ul>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">Simple counting plus clustering let a machine rediscover the structure of the genetic code on its own.</p>
+<ul><li>Unsupervised learning (K-means) and dimensionality reduction (PCA) revealed real biology with no labels.</li><li>Feature engineering mattered most: counting 3-letter k-mers was the key that exposed the codon structure.</li><li>Standardizing features before PCA and K-means is essential because both are distance-based algorithms.</li><li>The workflow validates a known discovery and shows how to probe an unknown sequence for hidden units.</li><li>Built with: pandas, numpy, tqdm, scikit-learn (PCA, KMeans, StandardScaler), matplotlib</li></ul>
+</section>
+
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>matplotlib</b> — plotting</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

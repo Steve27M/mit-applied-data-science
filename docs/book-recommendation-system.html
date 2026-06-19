@@ -1,0 +1,43 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Book Recommendation System — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>Book Recommendation System</h1><p>Comparing rank-based, collaborative filtering, and matrix factorization approaches to recommend books</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">I built a system that suggests books a reader is likely to enjoy based on how people have rated books in the past.</p>
+<ul><li>With online retail growing, personalized recommendations drive discovery, engagement, and sales for book retailers.</li><li>Most user-book pairs are unrated, so the goal is to predict which unseen books a user would rate highly.</li><li>Objective: build and compare recommenders that turn sparse rating data into a ranked top-N book list per user.</li><li>Also address the cold-start problem of recommending to brand-new users with no rating history.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A["User-Item Ratings"] --> B[EDA & Filtering]
+  B --> C["Approaches: Popularity / Collaborative Filtering / SVD"]
+  C --> D["Evaluate: RMSE / Precision@K"]
+  D --> E[Top-N Recommendations]</pre></section>
+<section class="card"><h2>The Data: Users, Books & Ratings</h2>
+<p class="plain">I started with over a million book ratings and cleaned them down to the meaningful ones before modeling.</p>
+<ul><li>Merged ratings and book datasets into 1,149,780 observations across 7 columns of user, book, and rating fields.</li><li>Ratings use a 1-10 scale; rating '0' dominated (~700K) and was treated as missing, then dropped.</li><li>After removing the 0 ratings, 433,671 genuine ratings remained from 77,805 users across 185,973 unique books.</li><li>Matrix is extremely sparse: only 433,671 of a possible ~14.5 billion user-book interactions are filled in.</li></ul>
+<div class="figs"><img src="assets/book-recommendation-system/fig1.png" loading="lazy"></div>
+</section><section class="card"><h2>Exploratory Analysis</h2>
+<p class="plain">I explored how ratings are spread out and found that a few popular books get most of the attention.</p>
+<ul><li>After cleaning, rating 8 was most common (~100K), followed by ratings 10 and 7 (~80K each); ratings 1-4 were rare.</li><li>Most-reviewed book (bookid 0316666343) drew 707 users, and was rated 8/9/10 by the majority who read it.</li><li>Power user 11676 rated 8,524 books, showing a small set of very active raters drives much of the data.</li><li>User-book interaction counts are heavily right-skewed: very few books have many ratings, most have few.</li></ul>
+<div class="figs"><img src="assets/book-recommendation-system/fig2.png" loading="lazy"></div>
+</section><section class="card"><h2>Recommender Approaches</h2>
+<p class="plain">I tried four methods, from a simple popularity ranking to advanced models that learn hidden user and book patterns.</p>
+<ul><li>Model 1 - Rank-based: recommends most popular books by average rating with a minimum-interactions threshold, solving cold start.</li><li>Model 2 - User-user collaborative filtering: cosine similarity with KNN to find like-minded users (scikit-surprise KNNBasic).</li><li>Model 3 - Item-item collaborative filtering: similarity computed between books rather than between users.</li><li>Model 4 - Matrix factorization (SVD): learns latent user and book features; all models tuned via GridSearchCV.</li><li>Evaluated with RMSE plus precision@k and recall@k, using rating 7 as the relevance threshold.</li></ul>
+<div class="figs"><img src="assets/book-recommendation-system/fig3.png" loading="lazy"></div>
+</section><section class="card"><h2>Results & Recommendations</h2>
+<p class="plain">Tuning improved every model, and item-based filtering gave the most accurate rating predictions.</p>
+<ul><li>Baseline user-user CF: RMSE 1.84 with ~0.81 precision and recall; tuning cut RMSE to 1.68 and raised F1 from 0.81 to 0.86.</li><li>Item-item CF was strongest on accuracy: RMSE improved from 1.62 to 1.58 with F1 around 0.80 after tuning.</li><li>Matrix factorization (SVD) F1 beat the user-user baseline but tuning yielded only marginal further gains.</li><li>Validated predictions case by case (e.g. user 1326, book 12344 predicted ~7.99 vs actual 8) and applied corrected ratings to rank ties.</li></ul>
+<div class="figs"><img src="assets/book-recommendation-system/fig4.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">Combining a simple popularity baseline with personalized models gives reliable book recommendations even from very sparse data.</p>
+<ul><li>Rank-based recommendations are a cheap, robust fallback for new users facing the cold-start problem.</li><li>Personalized collaborative filtering and matrix factorization clearly outperform popularity once a user has history.</li><li>Hyperparameter tuning with GridSearchCV consistently lowered RMSE and raised F1 across all model families.</li><li>Corrected ratings that weight the number of raters produce more trustworthy top-N rankings than raw averages.</li><li>Built with: pandas, numpy, matplotlib, seaborn, scikit-learn, scikit-surprise</li></ul>
+</section>
+
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li><li><b>scikit-surprise</b> — collaborative-filtering recommenders</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

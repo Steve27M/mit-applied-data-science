@@ -1,0 +1,46 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Predicting Employee Attrition with Deep Learning — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>Predicting Employee Attrition with Deep Learning</h1><p>An artificial neural network that flags which data scientists are likely to switch jobs</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">A company wants to predict, after its training courses, which employees are likely to leave for a new job.</p>
+<ul><li>A Big Data / Data Science firm trains candidates and needs to know who will stay versus who will move on to a new job.</li><li>Goal: predict the binary attrition target (looking for a job change or not) directly with a deep neural network, not a classic ML model.</li><li>Only ~25% of employees are actually seeking a change, making this an imbalanced classification problem.</li><li>Because both false positives and false negatives are costly, F1 score (not raw accuracy) is the chosen success metric.</li><li>An accurate model lets HR plan retention and hiring faster and more cheaply than manual review.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Raw Data] --> B[Clean & Encode]
+  B --> C[EDA]
+  C --> D[Train/Test Split]
+  D --> E["CNN"]
+  E --> F["Tune (Cross-Validation)"]
+  F --> G["Evaluate: Recall / F1 / ROC"]
+  G --> H[Interpret]</pre></section>
+<section class="card"><h2>The Data</h2>
+<p class="plain">The dataset describes about nineteen thousand employees using demographic, education, and training details.</p>
+<ul><li>19,158 rows and 14 columns: 10 categorical (object) and 4 numerical fields describing each employee.</li><li>Key numerics: training hours (max 336, but 75% finished within 88 hours) and city development index.</li><li>The City column has 123 unique categories; City 103 holds the most employees.</li><li>Heavily skewed cohort: over 90% male, ~70% with relevant data science experience, ~75% from private-sector firms.</li><li>Missing values imputed with the column mode; categorical columns converted via Label Encoding for the network.</li></ul>
+<div class="figs"><img src="assets/employee-attrition-deep-learning/fig1.png" loading="lazy"></div>
+</section><section class="card"><h2>Exploratory Analysis</h2>
+<p class="plain">We explored how training, experience, and education relate to whether an employee wants a new job.</p>
+<ul><li>Most employees trained under 100 hours, with central tendency around 70 hours despite a long right tail.</li><li>Employees from high-development cities (index over 0.9) are far less likely to switch jobs.</li><li>Those with non-relevant experience or under 3 years of work experience are the most likely to leave.</li><li>Gender showed little effect on attrition, while Graduates and Master's holders were more likely to switch.</li><li>The target itself is imbalanced (~25% positive), confirming the need for threshold tuning and F1 focus.</li></ul>
+<div class="figs"><img src="assets/employee-attrition-deep-learning/fig2.png" loading="lazy"><img src="assets/employee-attrition-deep-learning/fig3.png" loading="lazy"></div>
+</section><section class="card"><h2>Neural Network Architecture</h2>
+<p class="plain">We built and refined a layered neural network, adding dropout to stop it from over-memorizing the data.</p>
+<ul><li>Started with a shallow Keras model: Dense 64 -> 32 -> 1 sigmoid with SGD, trained 50 epochs.</li><li>Deepened the network and switched to the Adam optimizer, producing smoother train/validation loss curves.</li><li>Final model adds Dropout regularization: Dense 256 (drop 0.3) -> 128 (drop 0.3) -> 64 (drop 0.2) -> 32 -> 1 sigmoid.</li><li>Tuned the decision threshold with the ROC-AUC curve instead of the default 0.5 to handle class imbalance.</li><li>Explored RandomizedSearchCV, GridSearchCV, Keras Tuner, and SMOTE oversampling to push the F1 score higher.</li></ul>
+<div class="figs"><img src="assets/employee-attrition-deep-learning/fig4.png" loading="lazy"><img src="assets/employee-attrition-deep-learning/fig5.png" loading="lazy"></div>
+</section><section class="card"><h2>Results & Accuracy</h2>
+<p class="plain">The dropout network gave the best balanced performance, correctly flagging job-switchers without too many false alarms.</p>
+<ul><li>The baseline SGD model reached ~75% accuracy but a poor F1 score with too many false positives.</li><li>Adding depth and Adam raised the macro F1 score and smoothed convergence on the validation set.</li><li>The Dropout model (Model 4) cut the false negative rate and gave smooth train/validation curves with a solid F1.</li><li>Hyperparameter search and SMOTE were tried, but both tended to overfit and did not beat the Dropout model.</li><li>Model 4 was selected as the final model: best F1/recall balance from confusion matrix and ROC analysis.</li></ul>
+<div class="figs"><img src="assets/employee-attrition-deep-learning/fig6.png" loading="lazy"><img src="assets/employee-attrition-deep-learning/fig7.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">A well-regularized neural network can reliably predict employee attrition and support smarter HR decisions.</p>
+<ul><li>Dropout regularization beat both hyperparameter search and SMOTE for this imbalanced attrition dataset.</li><li>Optimizing F1 and ROC-tuned thresholds matters far more than raw accuracy when classes are skewed.</li><li>HR can deploy the model to flag likely job-switchers faster and more cheaply than manual review.</li><li>Future work: derive feature importance from a tree model and engineer skewed variables for a stronger network.</li><li>Built with: Python, Pandas, NumPy, Matplotlib, Seaborn, Scikit-learn, TensorFlow/Keras, Keras Tuner, imbalanced-learn (SMOTE).</li></ul>
+</section>
+<section class="card"><h2>More Visualizations</h2><div class="figs grid"><img src="assets/employee-attrition-deep-learning/fig8.png" loading="lazy"><img src="assets/employee-attrition-deep-learning/fig9.png" loading="lazy"><img src="assets/employee-attrition-deep-learning/fig10.png" loading="lazy"><img src="assets/employee-attrition-deep-learning/fig11.png" loading="lazy"></div></section>
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li><li><b>tensorflow</b> — deep-learning framework</li><li><b>keras</b> — high-level neural-network API</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

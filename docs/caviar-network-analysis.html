@@ -1,0 +1,43 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CAVIAR Criminal Network Analysis — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>CAVIAR Criminal Network Analysis</h1><p>Tracking how a Montreal drug-trafficking network reorganized under repeated police seizures</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">We studied how a real criminal drug network kept operating even as police repeatedly seized its product.</p>
+<ul><li>CAVIAR was a 1994-1996 Montreal Police / RCMP operation targeting a drug-trafficking network over two years.</li><li>Unusual mandate: seize drugs without arresting anyone until the very end, so the network stayed live and observable.</li><li>Drugs were seized on 11 occasions, with trafficker losses estimated at 32 million dollars.</li><li>Objective: map the network across time and see who stayed central as police pressure forced it to reorganize.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Edge List] --> B[Build Graph]
+  B --> C["Centrality (degree / betweenness)"]
+  C --> D[Community Detection]
+  D --> E[Interpret Key Actors]</pre></section>
+<section class="card"><h2>The Data</h2>
+<p class="plain">The evidence was 11 snapshots of who was talking to whom, captured from court-authorized wiretaps.</p>
+<ul><li>11 wiretap warrants, each valid ~2 months, define 11 sequential phases of the investigation.</li><li>Each phase is stored as an adjacency matrix in a DataFrame capturing communication links between actors.</li><li>Cleaning step: set the node index correctly and convert column labels to integers to match row indices.</li><li>Each matrix was converted to a graph with NetworkX's from_pandas_adjacency for analysis.</li><li>Seizures were uneven across phases, e.g. Phase 10 alone was 18.7M dollars and 2,200 kg of marijuana.</li></ul>
+<div class="figs"><img src="assets/caviar-network-analysis/fig1.png" loading="lazy"><img src="assets/caviar-network-analysis/fig2.png" loading="lazy"></div>
+</section><section class="card"><h2>Exploratory Analysis</h2>
+<p class="plain">We drew the network for every phase to watch its shape change as the investigation progressed.</p>
+<ul><li>Visualized all 11 phase graphs to see how the network expanded, contracted, and rewired over time.</li><li>Phases varied widely: some had no seizures while others had multiple disruptions in a single window.</li><li>Early phases show a tighter core; later phases reflect reorganization in response to product losses.</li><li>Visual inspection set up the need for quantitative centrality measures to rank actor importance.</li></ul>
+<div class="figs"><img src="assets/caviar-network-analysis/fig3.png" loading="lazy"><img src="assets/caviar-network-analysis/fig4.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Actors & Centrality</h2>
+<p class="plain">Math on the network pointed to a small set of people who consistently held it together.</p>
+<ul><li>Computed degree, eigenvector, betweenness, and closeness centrality (deg_cen, eig_cen, betw_cen, clo_cen) per phase.</li><li>Sorted each measure to surface the top 5 most important nodes in every phase.</li><li>Three actors recur as central: N1 (Daniel Serero), N3 (Pierre Perlini), and N12 (Ernesto Morales).</li><li>Betweenness flagged actors acting as brokers bridging otherwise disconnected parts of the network.</li><li>The Phase 2 graph highlights nodes 1, 3, and 12 in red to make the core players visible.</li></ul>
+<div class="figs"><img src="assets/caviar-network-analysis/fig5.png" loading="lazy"></div>
+</section><section class="card"><h2>How the Network Evolved</h2>
+<p class="plain">We tracked the key players phase by phase to see how their roles shifted under police pressure.</p>
+<ul><li>Plotted degree and betweenness centrality for nodes 1, 3, and 12 across all 11 phases.</li><li>Importance was not static: actors rose and fell in influence as seizures disrupted operations.</li><li>Centrality dips and recoveries trace how the network reoriented to keep moving product.</li><li>The trajectories show resilience, with central roles being reassigned rather than the network collapsing.</li></ul>
+<div class="figs"><img src="assets/caviar-network-analysis/fig6.png" loading="lazy"><img src="assets/caviar-network-analysis/fig7.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">Network analysis turned raw wiretap matrices into a clear story of who mattered and how the network adapted.</p>
+<ul><li>Adjacency matrices from 11 wiretap phases can be read directly into graphs for time-varying analysis.</li><li>Centrality measures reliably identified the network's key brokers across the two-year operation.</li><li>Three individuals (Serero, Perlini, Morales) remained pivotal despite repeated 32M-dollar disruptions.</li><li>Tracking centrality over time reveals network resilience and reorganization, not just static structure.</li><li>Built with: networkx, pandas, numpy, matplotlib, seaborn</li></ul>
+</section>
+<section class="card"><h2>More Visualizations</h2><div class="figs grid"><img src="assets/caviar-network-analysis/fig8.png" loading="lazy"><img src="assets/caviar-network-analysis/fig9.png" loading="lazy"><img src="assets/caviar-network-analysis/fig10.png" loading="lazy"><img src="assets/caviar-network-analysis/fig11.png" loading="lazy"></div></section>
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li><li><b>networkx</b> — graph / network analysis</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

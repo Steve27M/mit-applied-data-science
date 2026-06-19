@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clustering Countries by Socio-Economic Profile — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>Clustering Countries by Socio-Economic Profile</h1><p>Grouping 167 nations by health, trade, and income indicators to guide aid and development decisions</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">We wanted to sort countries into meaningful groups based on how developed and well-off they are.</p>
+<ul><li>Governments and NGOs need data-driven ways to identify which countries most need development aid.</li><li>Goal: group 167 countries by socio-economic and health indicators using unsupervised clustering.</li><li>No labels exist, so clusters must be discovered purely from patterns in the data.</li><li>Compare multiple algorithms to find groupings that are distinct and actionable.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Raw Data] --> B[Scale / Standardize]
+  B --> C["Reduce: PCA / t-SNE"]
+  C --> D["Cluster: K-Means / Hierarchical"]
+  D --> E["Evaluate: Elbow / Silhouette"]
+  E --> F[Interpret Clusters]</pre></section>
+<section class="card"><h2>The Data</h2>
+<p class="plain">Each country is described by nine numbers covering its economy, trade, and population health.</p>
+<ul><li>167 countries, 10 columns (9 numeric features plus country name), with no missing values or duplicates.</li><li>Features include child mortality, exports, imports, health spend, income, inflation, life expectancy, fertility, GDP per capita.</li><li>Child mortality ranges widely from 2.6 to 208 deaths per 1000 live births (mean approx. 38).</li><li>Most variables are right-skewed with outliers; life expectancy is the only left-skewed feature.</li><li>Features were standardized before clustering since distance-based methods are scale-sensitive.</li></ul>
+<div class="figs"><img src="assets/country-socioeconomic-clustering/fig1.png" loading="lazy"><img src="assets/country-socioeconomic-clustering/fig2.png" loading="lazy"></div>
+</section><section class="card"><h2>Exploratory Analysis</h2>
+<p class="plain">Richer countries clearly tend to be healthier, and poverty tracks closely with high child mortality.</p>
+<ul><li>Strong positive correlation between GDP per capita and income, as expected.</li><li>Life expectancy rises with GDP per capita: people live longer in richer countries.</li><li>Life expectancy is strongly negatively correlated with child mortality.</li><li>High-fertility countries tend to have larger populations and lower per-capita income.</li><li>Exports and imports span a huge range, with maxima near 200% of GDP.</li></ul>
+<div class="figs"><img src="assets/country-socioeconomic-clustering/fig2.png" loading="lazy"><img src="assets/country-socioeconomic-clustering/fig3.png" loading="lazy"></div>
+</section><section class="card"><h2>Clusters Discovered</h2>
+<p class="plain">Several methods all pointed to roughly three groups: rich, poor, and a large middle.</p>
+<ul><li>K-Means elbow plot dipped steadily from 2 to 8 with no clear elbow; silhouette score peaked at K=3.</li><li>K-Means gave a skewed split: a tiny 3-country high-income cluster versus 100+ in the largest group.</li><li>K-Medoids, GMM each found 3 clusters: high income, low income, and a large 'everything else' group.</li><li>Hierarchical (complete linkage) dendrogram cut at distance approx. 9 yielded 4 clusters.</li><li>DBSCAN returned 4 clusters, isolating extreme outliers (cluster -1) from compact core groups.</li></ul>
+<div class="figs"><img src="assets/country-socioeconomic-clustering/fig4.png" loading="lazy"><img src="assets/country-socioeconomic-clustering/fig5.png" loading="lazy"></div>
+</section><section class="card"><h2>Interpretation & Recommendations</h2>
+<p class="plain">The cleanest grouping separates struggling countries that need aid from prosperous trade hubs.</p>
+<ul><li>High-income cluster: 3 outlier trade hubs (Luxembourg, Malta, Singapore) with the highest import/export ratios.</li><li>Low-income cluster: highest child mortality, trade deficits, inflation, and lowest GDP and net income.</li><li>Hierarchical clustering isolated Nigeria alone, driven by its extreme 104% inflation rate.</li><li>K-Medoids recommended as the practical choice: its extreme clusters are the most distinct from each other.</li><li>Aid and development efforts should prioritize the low-income cluster's high-mortality, low-GDP nations.</li></ul>
+<div class="figs"><img src="assets/country-socioeconomic-clustering/fig6.png" loading="lazy"><img src="assets/country-socioeconomic-clustering/fig7.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">Comparing five clustering methods produced a robust, three-tier view of global development.</p>
+<ul><li>Five algorithms (K-Means, K-Medoids, GMM, Hierarchical, DBSCAN) converged on a rich/poor/middle structure.</li><li>Best algorithm depends on use case, but K-Medoids gave the most distinct, interpretable clusters.</li><li>Scaling and outlier awareness were essential since distance metrics drive every method.</li><li>A few extreme economies (tiny trade hubs, high-inflation Nigeria) repeatedly split off as their own groups.</li><li>Built with: pandas, numpy, matplotlib, seaborn, scikit-learn, scikit-learn-extra, scipy</li></ul>
+</section>
+<section class="card"><h2>More Visualizations</h2><div class="figs grid"><img src="assets/country-socioeconomic-clustering/fig8.png" loading="lazy"><img src="assets/country-socioeconomic-clustering/fig9.png" loading="lazy"><img src="assets/country-socioeconomic-clustering/fig10.png" loading="lazy"><img src="assets/country-socioeconomic-clustering/fig11.png" loading="lazy"></div></section>
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li><li><b>scipy</b> — scientific computing</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

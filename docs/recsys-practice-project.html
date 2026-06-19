@@ -1,0 +1,43 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Building a Product Recommender at Scale — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>Building a Product Recommender at Scale</h1><p>Comparing rank-based and collaborative-filtering recommenders on millions of user ratings</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">I set out to figure out which products to suggest to each shopper so they keep finding things they actually want.</p>
+<ul><li>E-commerce growth makes personalized recommendations a core driver of engagement, conversion, and repeat purchases.</li><li>Goal: predict how a user would rate an unseen item and surface the top items most likely to be relevant to them.</li><li>I treat relevance with a threshold rating of 7 (on a 1-10 scale) to score recommendations as relevant or not.</li><li>I compare four recommender families to see which best balances accuracy and useful top-N ranking.</li><li>Success is measured by RMSE on held-out ratings plus precision@k and recall@k for the recommended lists.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A["User-Item Ratings"] --> B[EDA & Filtering]
+  B --> C["Approaches: Popularity / Collaborative Filtering / SVD"]
+  C --> D["Evaluate: RMSE / Precision@K"]
+  D --> E[Top-N Recommendations]</pre></section>
+<section class="card"><h2>The Data</h2>
+<p class="plain">I started with over a million product ratings and cleaned them down to the ones that actually carry signal.</p>
+<ul><li>Raw ratings data held 1,149,780 observations across 7 columns, merged from the ratings and item tables.</li><li>Ratings of 0 dominated (~700K) and represent missing values, so I dropped them, leaving 433,671 real ratings.</li><li>The cleaned set spans 77,805 unique users and 185,973 unique items on a 1-10 explicit rating scale.</li><li>A full user-item matrix would hold ~14.5 billion cells, so the data is extremely sparse with one rating per user-item pair.</li><li>The most-rated item drew 707 ratings and the most active user rated 8,524 items, showing a long-tail of activity.</li></ul>
+<div class="figs"><img src="assets/recsys-practice-project/fig1.png" loading="lazy"></div>
+</section><section class="card"><h2>Exploratory Analysis</h2>
+<p class="plain">I looked at how ratings and activity are spread out before deciding how to model them.</p>
+<ul><li>After removing zeros, rating 8 is most common (~100K), followed by 10 and 7 (~80K each); 1-4 are rare.</li><li>This positive skew means relevance (>=7) is common, which shapes how precision and recall behave.</li><li>The user-item interaction distribution is heavily right-skewed: few items get many ratings, most get very few.</li><li>To make modeling tractable I filtered to active users and well-rated items rather than the full sparse matrix.</li><li>These patterns motivate a popularity baseline plus personalized collaborative filtering on the dense core.</li></ul>
+<div class="figs"><img src="assets/recsys-practice-project/fig2.png" loading="lazy"></div>
+</section><section class="card"><h2>Recommender Approaches</h2>
+<p class="plain">I built four kinds of recommender, from a simple popularity ranking to a learned matrix-factorization model.</p>
+<ul><li>Model 1 - Rank-based: ranks items by average rating with a minimum-interaction threshold, solving cold start.</li><li>Model 2 - User-user collaborative filtering with KNNBasic and cosine similarity over shared ratings.</li><li>Model 3 - Item-item collaborative filtering, computing similarity between items instead of users.</li><li>Model 4 - Matrix factorization with SVD, learning latent user and item factors via regularized SGD.</li><li>I tuned each model with GridSearchCV and evaluated with RMSE plus precision@k and recall@k.</li></ul>
+<div class="figs"><img src="assets/recsys-practice-project/fig3.png" loading="lazy"></div>
+</section><section class="card"><h2>Results & Recommendations</h2>
+<p class="plain">Tuning sharpened every model, and item-based and matrix-factorization approaches gave the most accurate predictions.</p>
+<ul><li>User-user baseline scored RMSE 1.84 with ~0.81 precision and recall; tuning cut RMSE to 1.68 and lifted F1 from 0.81 to 0.86.</li><li>Item-item baseline scored RMSE 1.62 (F1 0.80); tuning improved it to RMSE 1.58 with a slightly better F1.</li><li>SVD matrix factorization beat the user-user baseline on F1, with tuning adding only marginal gains.</li><li>For a known user-item pair the tuned model predicted 7.99 against an actual rating of 8 - a very close fit.</li><li>I recommend rank-based for cold-start and item-based or SVD for personalized top-N once interaction history exists.</li></ul>
+<div class="figs"><img src="assets/recsys-practice-project/fig4.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">A layered recommender that mixes popularity and learned similarity serves new and returning shoppers alike.</p>
+<ul><li>No single model wins everywhere: popularity covers cold start while CF and SVD personalize for active users.</li><li>Hyperparameter tuning delivered consistent RMSE and F1 gains, justifying GridSearchCV on every algorithm.</li><li>Correcting average ratings by interaction count produced fairer, more trustworthy item rankings.</li><li>Working at ~434K ratings, 78K users, and 186K items proved these methods scale to real e-commerce sparsity.</li><li>Built with: pandas, NumPy, Matplotlib, Seaborn, and scikit-surprise (Reader, Dataset, KNNBasic, SVD, GridSearchCV).</li></ul>
+</section>
+<section class="card"><h2>More Visualizations</h2><div class="figs grid"><img src="assets/recsys-practice-project/fig5.png" loading="lazy"><img src="assets/recsys-practice-project/fig6.png" loading="lazy"><img src="assets/recsys-practice-project/fig7.png" loading="lazy"><img src="assets/recsys-practice-project/fig8.png" loading="lazy"></div></section>
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li><li><b>scikit-surprise</b> — collaborative-filtering recommenders</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

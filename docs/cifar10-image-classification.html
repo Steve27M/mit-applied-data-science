@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CIFAR-10 Image Classification with CNNs — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>CIFAR-10 Image Classification with CNNs</h1><p>Classifying 32x32 color images into 10 object classes with convolutional neural networks and transfer learning</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">The goal is to teach a computer to look at a small photo and correctly name what object it shows.</p>
+<ul><li>CIFAR-10 is a benchmark image dataset spanning 10 everyday object classes used to train and test computer vision models.</li><li>Objective: build a model that takes a tiny 32x32 color image and predicts which of the 10 categories it belongs to.</li><li>Image classification is a core deep learning task that powers vision systems in self-driving, search, and tagging.</li><li>Approach: build a convolutional neural network (CNN) from scratch, then apply transfer learning to push accuracy higher.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Image Dataset] --> B[Resize / Normalize / Augment]
+  B --> C["CNN: Conv + Pooling layers"]
+  C --> D[Dense + Softmax]
+  D --> E[Train w/ Early Stopping]
+  E --> F["Evaluate: Accuracy and Confusion Matrix"]</pre></section>
+<section class="card"><h2>The Data (10 Classes)</h2>
+<p class="plain">The dataset holds 60,000 labeled photos split across ten common object types like planes, cats, and trucks.</p>
+<ul><li>10 classes: airplanes, cars, birds, cats, deer, dogs, frogs, horses, ships, and trucks.</li><li>50,000 training images and 10,000 test images, loaded directly from the Keras library as NumPy arrays.</li><li>Each image is a 32x32 grid of pixels with 3 color channels (R, G, B), stored as a 4-dimensional array.</li><li>Labels arrive encoded as numbers (e.g. 6 = frog), mapped to readable category names for interpretation.</li></ul>
+<div class="figs"><img src="assets/cifar10-image-classification/fig1.png" loading="lazy"></div>
+</section><section class="card"><h2>Sample Images & Preprocessing</h2>
+<p class="plain">Before training, the raw pixel values are rescaled and the labels reformatted so the network can learn efficiently.</p>
+<ul><li>Random sample images are reconstructed from NumPy arrays with matplotlib's imshow to inspect the data.</li><li>Pixel values range 0-255, so every pixel is divided by 255 to normalize inputs to a 0-1 scale.</li><li>Normalization speeds up training, reduces the chance of getting stuck at local optima, and stabilizes weights.</li><li>Targets are one-hot encoded into 10 columns so the output layer can produce a probability per class.</li></ul>
+<div class="figs"><img src="assets/cifar10-image-classification/fig2.png" loading="lazy"></div>
+</section><section class="card"><h2>CNN Architecture</h2>
+<p class="plain">A network of stacked layers learns visual patterns, refined across several versions to fix overfitting.</p>
+<ul><li>The first CNN, built sequentially with LeakyReLU activation, trained 2,105,066 parameters but heavily overfit.</li><li>Compiled with categorical cross-entropy loss and accuracy as the metric for this multi-class problem.</li><li>Dropout layers were added to curb overfitting, then more convolutional plus max-pooling layers cut parameters ~50%.</li><li>The third iteration solved overfitting and gave generalized performance with strong validation accuracy.</li><li>Transfer learning then reused pre-trained VGG16 (14.7M+ frozen parameters) to boost accuracy faster.</li></ul>
+<div class="figs"><img src="assets/cifar10-image-classification/fig3.png" loading="lazy"><img src="assets/cifar10-image-classification/fig4.png" loading="lazy"></div>
+</section><section class="card"><h2>Results & Accuracy</h2>
+<p class="plain">The best model correctly identifies about four out of five unseen photos, performing consistently on new data.</p>
+<ul><li>Transfer learning with VGG16 delivered the best validation accuracy without training any convolutional layers.</li><li>The final model reached about 79% accuracy on the held-out test data.</li><li>Test accuracy closely matched validation accuracy, confirming the model generalizes rather than memorizes.</li><li>Recall varied across classes, meaning the model identifies some objects well but struggles with others.</li><li>A confusion heatmap reveals which class pairs are most often mixed up in the predictions.</li></ul>
+<div class="figs"><img src="assets/cifar10-image-classification/fig5.png" loading="lazy"><img src="assets/cifar10-image-classification/fig6.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">Combining a custom-built network with a pre-trained one produced an accurate, well-generalizing image classifier.</p>
+<ul><li>A from-scratch CNN can classify CIFAR-10's 10 object classes once overfitting is controlled with dropout and pooling.</li><li>Iterative architecture changes mattered more than raw parameter count for improving generalization.</li><li>Transfer learning from VGG16 achieved the strongest results with far less training of the convolutional base.</li><li>The final classifier reached ~79% test accuracy, comparable to its validation performance.</li><li>Built with: Python, TensorFlow, Keras (VGG16), NumPy, Matplotlib, and scikit-learn.</li></ul>
+</section>
+<section class="card"><h2>More Visualizations</h2><div class="figs grid"><img src="assets/cifar10-image-classification/fig7.png" loading="lazy"></div></section>
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li><li><b>tensorflow</b> — deep-learning framework</li><li><b>keras</b> — high-level neural-network API</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

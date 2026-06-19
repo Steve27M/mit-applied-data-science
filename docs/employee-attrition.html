@@ -1,0 +1,46 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Employee Attrition Prediction — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>Employee Attrition Prediction</h1><p>Why employees leave — and predicting who is at risk</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">Losing employees is expensive — this finds why people leave and flags who might.</p>
+<ul><li>McCurr Healthcare Consultancy (a global MNC) wants to retain its best talent and curb costly turnover.</li><li>Attrition drives rehiring cost, lost institutional knowledge, and team disruption.</li><li>Objective 1 - identify the key factors that drive an employee to leave.</li><li>Objective 2 - build a model that predicts whether an employee will attrite.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Raw Data] --> B[Clean & Encode]
+  B --> C[EDA]
+  C --> D[Train/Test Split]
+  D --> E["Logistic Regression / KNN / LDA / QDA"]
+  E --> F["Tune (Cross-Validation)"]
+  F --> G["Evaluate: Recall / F1 / ROC"]
+  G --> H[Interpret]</pre></section>
+<section class="card"><h2>The Data</h2>
+<p class="plain">One row per employee, mixing personal details with work-life metrics.</p>
+<ul><li>2,940 employees described by 34 attributes, with no missing values.</li><li>Demographics (age, distance from home) plus work metrics (income, overtime, tenure, role).</li><li>Target: a binary Attrition flag - stayed vs left.</li><li>Dropped non-informative fields: EmployeeNumber (ID), Over18 and StandardHours (single value).</li></ul>
+<div class="figs"><img src="assets/employee-attrition/fig1.png" loading="lazy"></div>
+</section><section class="card"><h2>Exploratory Analysis</h2>
+<p class="plain">What the data looks like before any modeling.</p>
+<ul><li>Overall attrition rate is 16% - a minority class, which is the real-world difficulty.</li><li>About 28% of employees work overtime; most have traveled only rarely for work.</li><li>Age is roughly normal (most 25-50); many employees live close to the office.</li><li>Income, total experience, tenure, and age are strongly correlated with one another.</li></ul>
+<div class="figs"><img src="assets/employee-attrition/fig2.png" loading="lazy"><img src="assets/employee-attrition/fig3.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Drivers of Attrition</h2>
+<p class="plain">The factors that most separate leavers from stayers.</p>
+<ul><li>Overtime is the strongest signal: >30% of overtime employees leave vs ~10% of those who do not.</li><li>Leavers earn ~30% less income and have ~30% less work experience on average.</li><li>Early-tenure employees and those living further from work are likelier to go.</li><li>SHAP confirms OverTime, monthly income, and tenure as the top predictors.</li></ul>
+<div class="figs"><img src="assets/employee-attrition/fig4.png" loading="lazy"><img src="assets/employee-attrition/fig5.png" loading="lazy"></div>
+</section><section class="card"><h2>Modeling & Results</h2>
+<p class="plain">How the prediction model was built and how well it performed.</p>
+<ul><li>Pipeline: clean -> encode categoricals -> train/test split -> model -> tune -> interpret.</li><li>Compared Logistic Regression, KNN, and Discriminant Analysis (LDA/QDA), tuned with GridSearchCV.</li><li>Recall was prioritized - catching real leavers matters more than a few false alarms.</li><li>SHAP used to explain predictions, not just score them.</li></ul>
+<div class="figs"><img src="assets/employee-attrition/fig6.png" loading="lazy"><img src="assets/employee-attrition/fig7.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">What HR should actually do with this.</p>
+<ul><li>Focus retention on overtime-heavy, lower-paid, and early-tenure employees.</li><li>Use the model to flag at-risk staff early so managers can intervene.</li><li>With only 16% positives, recall and threshold choice matter more than raw accuracy.</li><li>Built with: pandas, scikit-learn, SHAP, seaborn / matplotlib.</li></ul>
+</section>
+<section class="card"><h2>More Visualizations</h2><div class="figs grid"><img src="assets/employee-attrition/fig8.png" loading="lazy"><img src="assets/employee-attrition/fig9.png" loading="lazy"><img src="assets/employee-attrition/fig10.png" loading="lazy"><img src="assets/employee-attrition/fig11.png" loading="lazy"></div></section>
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li><li><b>shap</b> — model explainability</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

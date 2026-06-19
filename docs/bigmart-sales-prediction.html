@@ -1,0 +1,45 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BigMart Sales Prediction — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>BigMart Sales Prediction</h1><p>Predicting item-level outlet sales with interpretable linear regression</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">We wanted to predict how much each product would sell at each store so the retailer can plan demand.</p>
+<ul><li>BigMart records item-level sales across outlets to forecast demand and understand what drives revenue.</li><li>Goal: predict ItemOutletSales for products at different stores, a continuous-target regression task.</li><li>Train data has both inputs and the sales target; the held-out test set must have its sales predicted.</li><li>Beyond accuracy, the aim was an interpretable model that explains which factors lift or lower sales.</li><li>Findings should translate into stocking and store-strategy recommendations management can act on.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Raw Data] --> B[Clean & Encode]
+  B --> C[EDA]
+  C --> D[Train/Test Split]
+  D --> E["Linear Regression"]
+  E --> F["Tune (Cross-Validation)"]
+  F --> G["Evaluate: R2 / RMSE"]</pre></section>
+<section class="card"><h2>The Data</h2>
+<p class="plain">We used two store-sales tables and cleaned up messy categories and missing entries before modeling.</p>
+<ul><li>Train set of 8,523 rows and 10 columns; separate test set of 5,681 rows to predict on.</li><li>ID columns ItemIdentifier and OutletIdentifier were dropped as they carry no predictive power.</li><li>ItemWeight was ~17% missing and OutletSize ~28% missing, requiring careful imputation.</li><li>ItemFatContent had inconsistent labels (low fat, LF, reg) standardized to Low Fat and Regular.</li><li>Mix of numeric (ItemMRP, ItemVisibility, ItemWeight) and categorical (ItemType, OutletType) features.</li></ul>
+<div class="figs"><img src="assets/bigmart-sales-prediction/fig1.png" loading="lazy"><img src="assets/bigmart-sales-prediction/fig2.png" loading="lazy"></div>
+</section><section class="card"><h2>Exploratory Analysis</h2>
+<p class="plain">We charted each variable and how they relate, finding price is the main thing tied to sales.</p>
+<ul><li>Univariate plots show Fruits and Vegetables, Snack Foods, and Household are the top-selling item types.</li><li>ItemVisibility is right-skewed while ItemWeight is roughly uniform across its range.</li><li>Average sales are nearly flat across outlet establishment years, with a dip in 1998.</li><li>Correlation heatmap shows only ItemMRP has a moderate linear relationship with ItemOutletSales.</li><li>Scatter plots confirm ItemWeight and ItemVisibility show little to no relationship with sales.</li></ul>
+<div class="figs"><img src="assets/bigmart-sales-prediction/fig3.png" loading="lazy"><img src="assets/bigmart-sales-prediction/fig4.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Drivers of Sales</h2>
+<p class="plain">Item price and store type were the strongest factors pushing sales up or down.</p>
+<ul><li>ItemMRP is the dominant driver: higher-priced items sell at much higher value (coefficient 1.9555).</li><li>Supermarket Type 3 outlets have the largest sales lift (coefficient 2.4837) over the baseline store.</li><li>Supermarket Type 1 and Type 2 also boost sales (coefficients 1.9550 and 1.7737 in log scale).</li><li>OutletAge was dropped for high VIF; ItemWeight, ItemVisibility, OutletSize, location were insignificant.</li><li>Final features all clear p < 0.05 and VIF < 5, confirming significant, non-collinear predictors.</li></ul>
+<div class="figs"><img src="assets/bigmart-sales-prediction/fig5.png" loading="lazy"><img src="assets/bigmart-sales-prediction/fig6.png" loading="lazy"></div>
+</section><section class="card"><h2>Modeling & Results</h2>
+<p class="plain">A log-transformed linear regression met all statistical assumptions and predicted sales reliably.</p>
+<ul><li>Built ordinary least squares regression with statsmodels after dummy-encoding and scaling features.</li><li>Initial model reached R-squared 0.563; log-transforming the target raised it to 0.720.</li><li>Log transform fixed the linearity issue; residuals are mean-zero, normal, and homoscedastic.</li><li>Cross-validation R-squared of 0.718 (MSE 0.290) matches training, indicating a well-generalized fit.</li><li>Final equation predicts log(ItemOutletSales) from ItemMRP, OutletType, and ItemFatContent.</li></ul>
+<div class="figs"><img src="assets/bigmart-sales-prediction/fig7.png" loading="lazy"><img src="assets/bigmart-sales-prediction/fig8.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">Stock high-priced items in visible spots and grow large supermarket-type stores to raise sales.</p>
+<ul><li>ItemMRP is the single biggest lever: stocking higher-MRP items in high-visibility areas can lift sales.</li><li>Large Supermarket Type 3 stores outsell all other outlet types and warrant continued investment.</li><li>Validated all regression assumptions, giving a transparent, defensible model for business decisions.</li><li>Non-linear models could capture remaining patterns and improve beyond the linear baseline in future.</li><li>Built with: pandas, numpy, matplotlib, seaborn, statsmodels, scikit-learn, scipy.</li></ul>
+</section>
+<section class="card"><h2>More Visualizations</h2><div class="figs grid"><img src="assets/bigmart-sales-prediction/fig9.png" loading="lazy"><img src="assets/bigmart-sales-prediction/fig10.png" loading="lazy"><img src="assets/bigmart-sales-prediction/fig11.png" loading="lazy"><img src="assets/bigmart-sales-prediction/fig12.png" loading="lazy"></div></section>
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li><li><b>statsmodels</b> — OLS / statistical inference & VIF</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

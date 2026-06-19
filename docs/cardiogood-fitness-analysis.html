@@ -1,0 +1,43 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CardioGood Fitness: Treadmill Customer Profiling — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>CardioGood Fitness: Treadmill Customer Profiling</h1><p>Descriptive analytics to build a buyer profile for each of three treadmill product lines</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">We set out to describe what kind of shopper buys each of the company's three treadmill models.</p>
+<ul><li>AdRight's market research team must define the typical customer profile for each CardioGood Fitness treadmill: TM195, TM498, and TM798.</li><li>Goal is to learn whether buyer characteristics differ meaningfully across the three product lines.</li><li>Insights guide targeted marketing and help match each model to the right audience.</li><li>Pure exploratory and descriptive analytics, no predictive modeling required.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Raw Data] --> B[Clean & Validate]
+  B --> C[Univariate EDA]
+  C --> D[Bivariate / Correlation]
+  D --> E[Insights & Recommendations]</pre></section>
+<section class="card"><h2>The Data</h2>
+<p class="plain">We analyzed records from 180 recent treadmill buyers, each described by nine attributes.</p>
+<ul><li>180 customers who purchased a treadmill in-store over the prior three months, with no missing values.</li><li>Nine variables: Product, Age, Gender, Education, MaritalStatus, Usage, Fitness, Income, and Miles.</li><li>Product mix is uneven: TM195 (80 buyers), TM498 (60), and premium TM798 (40).</li><li>Buyers skew male (104 of 180) and partnered (107 of 180); average age is about 29 years.</li><li>Self-rated fitness runs on a 1-to-5 scale; income ranges from about $29.6K to $104.6K.</li></ul>
+<div class="figs"><img src="assets/cardiogood-fitness-analysis/fig1.png" loading="lazy"></div>
+</section><section class="card"><h2>Exploratory Analysis</h2>
+<p class="plain">We looked at how age, income, usage, and miles are distributed and how they relate.</p>
+<ul><li>Average income is about $53.7K (median $50.6K) and planned weekly miles average 103, with a long right tail to 360.</li><li>Customers plan to use the treadmill about 3.5 times per week on average (range 2 to 7).</li><li>Distributions for age, income, and miles are right-skewed, with most buyers clustered at the lower end.</li><li>Boxplots by gender and product reveal the spread and outliers behind these averages.</li><li>A pairplot maps the joint structure across all numeric variables at once.</li></ul>
+<div class="figs"><img src="assets/cardiogood-fitness-analysis/fig2.png" loading="lazy"><img src="assets/cardiogood-fitness-analysis/fig3.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Drivers & Relationships</h2>
+<p class="plain">A few attributes move together strongly and explain who the heavy users are.</p>
+<ul><li>Miles is most strongly tied to self-rated Fitness (r = 0.79) and weekly Usage (r = 0.76).</li><li>Income correlates with Education (r = 0.63) and moderately with Usage and Fitness (about 0.52 to 0.54).</li><li>Age is largely independent of usage and miles, so older buyers are not necessarily lighter users.</li><li>Fitter, more frequent users plan to log far more weekly miles, marking a distinct high-engagement segment.</li><li>These relationships point to fitness intensity, not demographics, as the main behavioral driver.</li></ul>
+<div class="figs"><img src="assets/cardiogood-fitness-analysis/fig4.png" loading="lazy"><img src="assets/cardiogood-fitness-analysis/fig5.png" loading="lazy"></div>
+</section><section class="card"><h2>Insights & Recommendations</h2>
+<p class="plain">Each model attracts a clearly different buyer, so marketing can be tailored per product.</p>
+<ul><li>TM195 (entry) and TM498 (mid) draw a balanced gender mix; TM798 skews heavily male (33 of 40 buyers).</li><li>TM798 is the premium product: buyers earn far more (often $80K+ vs. roughly $46K-$50K for TM195/TM498).</li><li>TM798 buyers are the fittest and highest-mileage segment, e.g. partnered women averaging 215 weekly miles.</li><li>Position TM798 to affluent, high-fitness enthusiasts; market TM195/TM498 to value-focused, casual users.</li><li>Use income, education, and fitness level, not age, as the primary segmentation levers.</li></ul>
+<div class="figs"><img src="assets/cardiogood-fitness-analysis/fig6.png" loading="lazy"><img src="assets/cardiogood-fitness-analysis/fig7.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">Clear, data-backed customer profiles now distinguish all three treadmill lines.</p>
+<ul><li>Three distinct profiles emerged across 180 buyers, validating that product lines serve different audiences.</li><li>Fitness and usage intensity, captured by weekly miles, separate premium TM798 buyers from the rest.</li><li>Income and education, not age, are the strongest demographic differentiators.</li><li>Descriptive analytics alone delivered actionable, segment-specific marketing direction.</li><li>Built with: pandas, numpy, matplotlib, seaborn, scikit-learn</li></ul>
+</section>
+<section class="card"><h2>More Visualizations</h2><div class="figs grid"><img src="assets/cardiogood-fitness-analysis/fig8.png" loading="lazy"><img src="assets/cardiogood-fitness-analysis/fig9.png" loading="lazy"><img src="assets/cardiogood-fitness-analysis/fig10.png" loading="lazy"><img src="assets/cardiogood-fitness-analysis/fig11.png" loading="lazy"></div></section>
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

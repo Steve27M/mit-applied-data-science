@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Predicting Hospital Length of Stay for HealthPlus — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>Predicting Hospital Length of Stay for HealthPlus</h1><p>A deployable regression model that forecasts patient length of stay at admission to plan beds, staff, and resources</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">We built a tool that estimates how many days a patient will stay in the hospital so the hospital can plan beds and staff ahead of time.</p>
+<ul><li>Hospital management gained urgency during COVID-19, when poor allocation of beds and ventilators caused serious complications.</li><li>HealthPlus hired us to find what drives length of stay (LOS) and predict it from data available at admission plus a few tests.</li><li>Accurate LOS at admission lets the hospital pre-allocate beds, staff, and equipment instead of reacting to overcrowding.</li><li>Goal extends beyond analysis: deliver a model that can actually be serialized and deployed into hospital operations.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Raw Data] --> B[Clean & Encode]
+  B --> C[EDA]
+  C --> D[Train/Test Split]
+  D --> E["Random Forest / Linear Regression / Ridge / Lasso"]
+  E --> F["Tune (Cross-Validation)"]
+  F --> G["Evaluate: R2 / RMSE"]</pre></section>
+<section class="card"><h2>The Data</h2>
+<p class="plain">We used records of half a million hospital admissions, each describing the patient, their ward, department, and their actual stay.</p>
+<ul><li>Dataset of 500,000 patient admission records across 15 columns, with no missing values and all rows unique.</li><li>Numeric fields include Available Extra Rooms, staff available, Visitors with Patient, Admission Deposit, and target Stay (in days).</li><li>Categorical fields capture age band, department, ward type, severity of illness, and treating doctor.</li><li>Same patient could be readmitted up to 21 times; ~3 spare rooms and ~5 staff available on average per admission.</li><li>Target is continuous days of stay, so this is framed as a regression problem.</li></ul>
+<div class="figs"><img src="assets/hospital-los-deployment/fig1.png" loading="lazy"><img src="assets/hospital-los-deployment/fig2.png" loading="lazy"></div>
+</section><section class="card"><h2>Exploratory Analysis</h2>
+<p class="plain">We looked at patterns in the data and found that the department and ward, not the numeric measurements, explain how long patients stay.</p>
+<ul><li>Most patients stay 8-9 days; few exceed 10 days and very few exceed 40, consistent with mostly moderate or minor illness (~82%).</li><li>Correlation heatmap shows almost no linear relationship between numeric features and LOS, pointing to categorical drivers.</li><li>Wards A and C have the longest stays and house serious cases; Ward A holds the most extreme cases and all surgical patients.</li><li>Gynecology is the busiest department (~68% of patients); patients aged 1-10 and 51-100 tend to stay the longest.</li><li>Admission Deposit is near-normal with two-sided outliers; visitor counts are right-skewed (2 and 4 most common).</li></ul>
+<div class="figs"><img src="assets/hospital-los-deployment/fig3.png" loading="lazy"><img src="assets/hospital-los-deployment/fig4.png" loading="lazy"></div>
+</section><section class="card"><h2>Modeling & Results</h2>
+<p class="plain">We tested several prediction methods and a Random Forest, after fine-tuning, gave the most accurate length-of-stay estimates.</p>
+<ul><li>Encoded categorical features, split into train/test, and evaluated with RMSE, MAE, R-squared, Adjusted R-squared, and MAPE.</li><li>Compared Decision Tree, Bagging, Random Forest, AdaBoost, Gradient Boosting, and XGBoost regressors.</li><li>Random Forest Regressor won with the lowest RMSE and MAE; hyperparameter tuning slightly improved its RMSE and R-squared.</li><li>Decision tree root split on Department=gynecology, confirming department is the highest information-gain feature.</li><li>Top features: Department gynecology, Age 41-50, Age 31-40, then anesthesia, radiotherapy, and Admission Deposit.</li></ul>
+<div class="figs"><img src="assets/hospital-los-deployment/fig5.png" loading="lazy"><img src="assets/hospital-los-deployment/fig6.png" loading="lazy"></div>
+</section><section class="card"><h2>Productionizing the Model</h2>
+<p class="plain">We packaged the trained model into a file so it can be saved, shared, and loaded by a live system to make predictions on new patients.</p>
+<ul><li>Wrapped preprocessing and the model in a single scikit-learn Pipeline with a ColumnTransformer so raw admission data feeds straight in.</li><li>Serialized the trained model to disk with Pickle (model.pkl) using pickle.dump, reloaded via pickle.load for inference.</li><li>Also persisted with Joblib (model.joblib), which is more efficient for the large NumPy arrays inside the Random Forest.</li><li>A serialized pipeline can be loaded behind a service at admission to return a live LOS estimate without retraining.</li><li>Pipeline packaging makes the artifact reusable as a starting point for future deployment and further model development.</li></ul>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">Knowing a patient's likely length of stay at admission helps the hospital staff its busiest departments and manage resources.</p>
+<ul><li>Gynecology handles 68.7% of all patients and needs ample dedicated staffing and resources to run smoothly.</li><li>Department, age band, and ward drive LOS far more than numeric measures, so capacity planning should center on them.</li><li>Tuned Random Forest, served via a Pickle/Joblib pipeline, gives operations an at-admission LOS forecast.</li><li>Visitor counts reach up to 32 per patient; capping visitors is a low-cost operational recommendation.</li><li>Built with: pandas, numpy, matplotlib, seaborn, scikit-learn, xgboost, pickle, joblib</li></ul>
+</section>
+<section class="card"><h2>More Visualizations</h2><div class="figs grid"><img src="assets/hospital-los-deployment/fig7.png" loading="lazy"><img src="assets/hospital-los-deployment/fig8.png" loading="lazy"><img src="assets/hospital-los-deployment/fig9.png" loading="lazy"><img src="assets/hospital-los-deployment/fig10.png" loading="lazy"></div></section>
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li><li><b>xgboost</b> — gradient-boosted trees</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

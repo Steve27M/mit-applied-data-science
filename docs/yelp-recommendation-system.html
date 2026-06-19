@@ -1,0 +1,40 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Yelp Restaurant Recommendation System — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>Yelp Restaurant Recommendation System</h1><p>Recommending restaurants from Yelp reviews using both collaborative filtering and content-based NLP</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">Help Yelp users discover restaurants they will love by learning from the reviews and ratings other diners have already left.</p>
+<ul><li>Yelp (founded 2004) publishes crowd-sourced reviews of local businesses; the goal is to surface restaurants a user is likely to enjoy.</li><li>Frame the task two ways: predict a user's rating for unseen restaurants, and find restaurants similar to one a user already likes.</li><li>Address the cold-start problem (new users with no history) with a rank-based popularity fallback.</li><li>Optimize both precision and recall so recommendations are relevant and few good restaurants are missed.</li><li>Compare multiple algorithm families to find the strongest recommender for this data.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A["User-Item Ratings"] --> B[EDA & Filtering]
+  B --> C["Approaches: Popularity / Collaborative Filtering / SVD"]
+  C --> D["Evaluate: RMSE / Precision@K"]
+  D --> E[Top-N Recommendations]</pre></section>
+<section class="card"><h2>The Data (Yelp Reviews)</h2>
+<p class="plain">The dataset is hundreds of thousands of Yelp restaurant ratings, where each row is one diner rating one restaurant.</p>
+<ul><li>229,907 rating observations, each a single user-restaurant interaction with no duplicate visits.</li><li>45,981 unique users and 11,537 unique restaurants, giving an extremely sparse user-item matrix.</li><li>Only ~229K of a possible ~53 x 10^7 ratings exist, so the vast majority of pairs are unrated.</li><li>Part 1 uses a 3-column ratings table; Part 2 adds review text (5 columns) for content-based modeling.</li><li>Data filtered to active users and frequently-rated restaurants to keep modeling computationally efficient.</li></ul>
+</section><section class="card"><h2>Exploratory Analysis</h2>
+<p class="plain">Looking at the ratings shows most diners only post when they love a place, and a handful of restaurants dominate the reviews.</p>
+<ul><li>Ratings are heavily skewed toward 4 and 5 stars; very few users give 1-3, so people mostly rate places they like.</li><li>Most-reviewed restaurant (businessid hW0NeHTHEAgGF1rAdmR-g) was rated 844 times, yet 45,137 users still haven't seen it.</li><li>Most-active user (fczQCSmaWF78toLEmb0Zsw) rated 588 restaurants, leaving 10,949 unvisited to recommend.</li><li>High-interaction restaurants skew toward 3-4 stars, showing popularity does not guarantee high ratings.</li><li>Rank-based model recommends top restaurants by average rating with a minimum-interaction threshold for cold start.</li></ul>
+<div class="figs"><img src="assets/yelp-recommendation-system/fig1.png" loading="lazy"><img src="assets/yelp-recommendation-system/fig2.png" loading="lazy"><img src="assets/yelp-recommendation-system/fig3.png" loading="lazy"></div>
+</section><section class="card"><h2>Collaborative Filtering</h2>
+<p class="plain">These models predict how a user would rate a restaurant by learning patterns from similar users and similar restaurants.</p>
+<ul><li>Built with the scikit-surprise library: KNNBasic user-user and item-item similarity models plus SVD matrix factorization.</li><li>Baseline user-user KNN reached ~42% recall and ~80% precision; evaluated with precision@10/recall@10 at a 3.5 threshold.</li><li>GridSearchCV tuned k, similarity metric, and SVD's n_epochs, lr_all, and reg_all to lift performance and lower RMSE.</li><li>Tuned item-item and SVD models clearly beat their baselines; SVD gave the best result at ~51% F1 score.</li><li>Corrected ratings (subtracting 1/sqrt(n)) re-rank top picks so confidence in popular restaurants is rewarded.</li></ul>
+</section><section class="card"><h2>Content-Based (TF-IDF / NLP)</h2>
+<p class="plain">This approach reads the actual review text to recommend restaurants that are described in similar ways.</p>
+<ul><li>Uses review text as the feature; recommends businesses whose reviews read most similarly to a chosen restaurant.</li><li>Text cleaned with nltk: lowercasing, removing stopwords, punctuation, and non-ASCII characters to reduce noise.</li><li>TF-IDF vectorization extracted 9,729 features from the review corpus.</li><li>Cosine similarity over the TF-IDF vectors ranks the most similar restaurants for a given business.</li><li>For top-rated Asian Cafe Express, most recommendations were 4-5 star restaurants, confirming the system works.</li></ul>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">Combining what diners rate with what they write about produces stronger, more flexible restaurant recommendations.</p>
+<ul><li>Built five recommenders: rank-based, user-user KNN, item-item KNN, SVD matrix factorization, and co-clustering.</li><li>SVD matrix factorization was the best collaborative model (~51% F1); tuning consistently improved item-item and SVD.</li><li>Content-based TF-IDF handles cold-start items and adds recommendations that ratings-only models cannot.</li><li>Collaborative and content-based approaches are complementary and can be blended into a hybrid recommender.</li><li>Built with: pandas, numpy, matplotlib, seaborn, scikit-learn, scikit-surprise, nltk.</li></ul>
+</section>
+
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li><li><b>scikit-surprise</b> — collaborative-filtering recommenders</li><li><b>nltk</b> — text tokenization & stopwords</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

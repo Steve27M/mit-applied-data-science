@@ -1,0 +1,46 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Celestial Object Detection — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>Celestial Object Detection</h1><p>Classifying stars, galaxies, and quasars from Sloan Digital Sky Survey photometry</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">We taught a computer to look at telescope measurements and tell whether each object in the sky is a star, a galaxy, or a quasar.</p>
+<ul><li>Goal: multiclass classification of every observed object into Star, Galaxy, or Quasar (QSO) from tabular sky-survey features.</li><li>Astronomy generates vast datasets, making manual labeling impractical and machine learning a natural fit for the task.</li><li>Quasars are rare, supermassive-black-hole-powered objects distinguished mainly by their extreme redshift.</li><li>Approach: supervised non-linear methods, comparing k-Nearest Neighbors against a Decision Tree classifier.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Raw Data] --> B[Clean & Encode]
+  B --> C[EDA]
+  C --> D[Train/Test Split]
+  D --> E["Random Forest / Decision Tree / KNN / PCA"]
+  E --> F["Tune (Cross-Validation)"]
+  F --> G["Evaluate: Recall / F1 / ROC"]
+  G --> H[Interpret]</pre></section>
+<section class="card"><h2>The Data</h2>
+<p class="plain">We used a quarter-million real sky observations from a major astronomical survey, each described by 17 measured features.</p>
+<ul><li>Source: Sloan Digital Sky Survey (SDSS) with 250,000 observations across 18 columns and zero missing or duplicate rows.</li><li>Features include photometric filters (u, g, r, i, z), sky coordinates (ra, dec), redshift, and survey metadata.</li><li>Class balance is uneven: 51.1% Galaxy, 38.4% Star, 10.6% Quasar.</li><li>Sampled 50,000 rows for modeling; dropped ID columns (objid, specobjid) that carry no predictive value.</li></ul>
+<div class="figs"><img src="assets/celestial-object-detection/fig1.png" loading="lazy"></div>
+</section><section class="card"><h2>Exploratory Analysis</h2>
+<p class="plain">We charted each measurement to see how the three object types differ and which features actually carry useful signal.</p>
+<ul><li>Univariate plots showed plate, field, dec, and redshift are right-skewed with visible outliers.</li><li>Redshift needed a log transform to be readable; its distribution clearly separates the quasar class.</li><li>Photometric filters r, i, and z share near-identical distributions, while u and g are slightly left-skewed.</li><li>Correlation heatmap revealed strong positive links among filters (z-g, z-r, i-r) and redshift negatively correlated with class.</li></ul>
+<div class="figs"><img src="assets/celestial-object-detection/fig2.png" loading="lazy"><img src="assets/celestial-object-detection/fig3.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Drivers / Features</h2>
+<p class="plain">One measurement, redshift, turned out to matter far more than any other for telling the objects apart.</p>
+<ul><li>Redshift dominated feature importance and was the Decision Tree's very first (root) split.</li><li>This matches known astronomy: high redshift is a defining trait of distant quasars in the expanding universe.</li><li>Low-signal columns (rerun, run, field, camcol, fiberid) showed no class separation and were dropped.</li><li>After pruning, 11 features remained for the final models, keeping photometric filters and redshift.</li></ul>
+<div class="figs"><img src="assets/celestial-object-detection/fig4.png" loading="lazy"></div>
+</section><section class="card"><h2>Modeling & Results</h2>
+<p class="plain">A simple decision tree read the data almost perfectly, beating the alternative method by a wide margin.</p>
+<ul><li>k-Nearest Neighbors reached only ~0.82 accuracy and ~0.80 weighted F1 on test, falling short of the 90%+ target.</li><li>Applying PCA hurt kNN, dropping test accuracy to ~0.78 weighted F1.</li><li>The Decision Tree achieved ~0.99 weighted precision, recall, and F1 on the test set.</li><li>5-fold cross-validation confirmed robustness with an average score of 0.983; scaling made no difference.</li></ul>
+<div class="figs"><img src="assets/celestial-object-detection/fig5.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">A fast, easy-to-explain model can sort sky objects with near-perfect accuracy, making it a practical second opinion for astronomers.</p>
+<ul><li>Decision Trees outperformed kNN while being more computationally efficient on large astronomical data.</li><li>The model rediscovered domain knowledge unaided: redshift is the key to classifying celestial objects.</li><li>At 90%+ performance, the tree is recommended as a quick screening tool over costlier ensemble methods.</li><li>Tree splits at orthogonal boundaries suit naturally bounded feature ranges of stars, galaxies, and quasars.</li><li>Built with: pandas, NumPy, scikit-learn, Matplotlib, seaborn</li></ul>
+</section>
+<section class="card"><h2>More Visualizations</h2><div class="figs grid"><img src="assets/celestial-object-detection/fig6.png" loading="lazy"><img src="assets/celestial-object-detection/fig7.png" loading="lazy"><img src="assets/celestial-object-detection/fig8.png" loading="lazy"><img src="assets/celestial-object-detection/fig9.png" loading="lazy"></div></section>
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

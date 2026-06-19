@@ -1,0 +1,40 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MovieLens Movie Recommendation System — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>MovieLens Movie Recommendation System</h1><p>Recommending relevant movies from user rating history with popularity, collaborative filtering, and SVD</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">I built a system that suggests movies people are likely to enjoy based on how they and others have rated films before.</p>
+<ul><li>Streaming platforms hold huge movie catalogs, so surfacing the right titles to each user directly drives engagement and retention.</li><li>Goal: predict which unrated movies a user would rate highly and recommend the top few personalized picks.</li><li>I framed it as a rating-prediction task, then ranked the highest predicted ratings into a top-N list per user.</li><li>I also tackled the cold-start problem, where a brand-new user has no history to personalize from.</li><li>Success was judged on predicted-vs-actual accuracy (RMSE) plus precision@k, recall@k, and F1@k on recommendations.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A["User-Item Ratings"] --> B[EDA & Filtering]
+  B --> C["Approaches: Popularity / Collaborative Filtering / SVD"]
+  C --> D["Evaluate: RMSE / Precision@K"]
+  D --> E[Top-N Recommendations]</pre></section>
+<section class="card"><h2>The Data (MovieLens)</h2>
+<p class="plain">I worked with a real set of 100,836 movie ratings from 610 people covering thousands of films.</p>
+<ul><li>The MovieLens ratings dataset has 100,836 rows across userId, movieId, rating, and timestamp columns.</li><li>It spans 610 unique users and 9,724 unique movies, all on a 0.5-to-5 star rating scale.</li><li>610 users x 9,724 movies allows ~5.93M possible ratings, but only 100,836 exist, so the matrix is highly sparse.</li><li>Each user-movie pair appears exactly once, confirming there are no duplicate interactions to clean up.</li><li>I dropped the timestamp column since it was not needed for rating prediction.</li></ul>
+</section><section class="card"><h2>Exploratory Analysis</h2>
+<p class="plain">I explored who rates the most, which movies are most watched, and how lopsided the activity is.</p>
+<ul><li>The most-interacted movie (movieId 356) drew 329 ratings, still short of all 610 users, leaving room to recommend it further.</li><li>Its ratings skewed toward 4s and 5s, signaling a genuinely well-liked title rather than just a frequently-watched one.</li><li>The most active user (userId 414) rated 2,698 movies, far more than the typical viewer.</li><li>User-movie interactions are highly uneven, with a few heavy raters and many films rated only a handful of times.</li><li>This sparsity and skew motivated combining popularity-based and personalized approaches.</li></ul>
+<div class="figs"><img src="assets/movielens-recommendation/fig1.png" loading="lazy"><img src="assets/movielens-recommendation/fig2.png" loading="lazy"></div>
+</section><section class="card"><h2>Recommender Approaches</h2>
+<p class="plain">I compared four ways of recommending, from a simple popularity ranking up to a learned matrix-factorization model.</p>
+<ul><li>Rank-based: averaged each movie's ratings with a minimum-interaction threshold to handle cold start for new users.</li><li>User-user collaborative filtering: cosine similarity with KNNBasic from the surprise library to find like-minded users.</li><li>Item-item collaborative filtering: the same KNN approach but measuring similarity between movies instead of users.</li><li>Matrix factorization (SVD): learned latent user and movie features to predict ratings for unseen pairs.</li><li>I tuned each model with GridSearchCV on RMSE and evaluated recommendations using precision, recall, and F1 at k=10.</li></ul>
+</section><section class="card"><h2>Results & Recommendations</h2>
+<p class="plain">Tuning the user-based model gave the strongest, most reliable recommendations of the approaches I tested.</p>
+<ul><li>The baseline user-user model reached recall ~0.54 and precision ~0.76 at a 3.5 relevance threshold.</li><li>Hyperparameter tuning lifted the user-user F1 score and lowered its RMSE, beating the baseline.</li><li>The item-item baseline scored F1 ~0.53 and also improved with tuning of its KNN hyperparameters.</li><li>The SVD matrix-factorization model trailed the similarity-based models on F1 and barely improved after tuning.</li><li>I recommend the tuned user-user collaborative filter as the primary engine, with rank-based fallback for new users.</li></ul>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">A well-tuned similarity-based recommender, backed by a popularity fallback, delivered the best movie suggestions here.</p>
+<ul><li>Personalized collaborative filtering outperformed matrix factorization on this sparse 100K-rating dataset.</li><li>Popularity-based ranking is a simple, effective answer to the cold-start problem for users with no history.</li><li>Hyperparameter tuning via GridSearchCV consistently cut RMSE and raised F1 for the KNN-based models.</li><li>Correcting ratings by interaction count produced more trustworthy top-N rankings than raw averages alone.</li><li>Built with: Python, pandas, NumPy, scikit-learn, scikit-surprise, Matplotlib, Seaborn</li></ul>
+</section>
+
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li><li><b>scikit-surprise</b> — collaborative-filtering recommenders</li><li><b>nltk</b> — text tokenization & stopwords</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

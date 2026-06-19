@@ -1,0 +1,43 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rice Type Classification with CNNs — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>Rice Type Classification with CNNs</h1><p>Sorting five rice varieties from magnified grain images using deep learning</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">We taught a computer to look at a single grain of rice and name which of five varieties it is.</p>
+<ul><li>Rice supplies 21% of global per-capita energy and 15% of protein, so reliable variety sorting matters at scale.</li><li>Goal: automatically classify magnified rice-grain images into 5 types: Arborio, Basmati, Ipsala, Jasmine, Karacadag.</li><li>Manual grading of grain type is slow and subjective; a vision model offers fast, consistent, repeatable sorting.</li><li>Success means not only high accuracy but also low inference time, since the model is meant for real production lines.</li><li>Framed as a 5-class image classification task benchmarking ANN versus CNN architectures.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Image Dataset] --> B[Resize / Normalize / Augment]
+  B --> C["CNN: Conv + Pooling layers"]
+  C --> D[Dense + Softmax]
+  D --> E[Train w/ Early Stopping]
+  E --> F["Evaluate: Accuracy and Confusion Matrix"]</pre></section>
+<section class="card"><h2>The Data (Rice Varieties)</h2>
+<p class="plain">We started with about 74,000 labeled photos of rice grains split evenly across the five types.</p>
+<ul><li>Dataset holds roughly 74K magnified images split across the 5 rice classes (Arborio, Basmati, Ipsala, Jasmine, Karacadag).</li><li>Each image shows a single grain centered on a plain black background with no clutter or competing objects.</li><li>Images already appear in many orientations, so rotation-based data augmentation was unnecessary.</li><li>Data was organized into train, validation, and test folders fed through Keras ImageDataGenerator loaders.</li><li>Grains were resized to a small 48x48 grayscale format to keep training tractable across tens of thousands of images.</li></ul>
+<div class="figs"><img src="assets/rice-type-cnn-classification/fig1.png" loading="lazy"></div>
+</section><section class="card"><h2>Sample Images & Preprocessing</h2>
+<p class="plain">We looked at example grains from each type and shrank every image to a small standard size before training.</p>
+<ul><li>Visualized each variety side by side to confirm shape is the main distinguishing feature of the grains.</li><li>Images are simple: just the grain silhouette on black, with no curves or texture beyond grain shape.</li><li>All grains are perfectly centered, which lets even a plain ANN perform surprisingly well on these images.</li><li>Pixel values were rescaled and images standardized to 48x48 grayscale via the image data generators.</li><li>Basmati and Jasmine share long grains and Karacadag resembles Arborio, hinting at where confusion may occur.</li></ul>
+<div class="figs"><img src="assets/rice-type-cnn-classification/fig2.png" loading="lazy"><img src="assets/rice-type-cnn-classification/fig3.png" loading="lazy"></div>
+</section><section class="card"><h2>CNN Architecture</h2>
+<p class="plain">We built and compared several network designs, settling on a compact convolutional model with dropout.</p>
+<ul><li>Baseline ANN flattened the 48x48 images into 2,304 inputs feeding Dense layers (512, 256) into a 5-way softmax.</li><li>Base CNN used 4 convolutional blocks (Conv2D + MaxPooling) to learn grain shape features directly from pixels.</li><li>Final model trimmed to 3 convolutional blocks, each paired with a Dropout layer to curb overfitting and shrink parameters.</li><li>Models compiled with Adam and categorical cross-entropy, ending in a 5-unit softmax for the five rice classes.</li><li>Trained for just 2 epochs to cap compute time on the ~74K-image set, trading some accuracy for speed.</li></ul>
+</section><section class="card"><h2>Results & Accuracy</h2>
+<p class="plain">Even with very short training the smaller convolutional model classified most grains correctly with few mix-ups.</p>
+<ul><li>With only 2 epochs, the smaller CNN still reached training accuracy near 92% and the best test accuracy of the models tried.</li><li>Dropout layers kept the smaller CNN from overfitting, so its test accuracy edged out the larger CNN and the ANN.</li><li>The confusion matrix shows very few misclassifications across the five varieties at this reduced epoch budget.</li><li>Typical errors are intuitive: a Basmati read as Jasmine (both long-grained) and Karacadag confused with Arborio.</li><li>Inference time fell from 106 ms/step for the base CNN to about 55 ms/step for the smaller model, aiding deployment.</li></ul>
+<div class="figs"><img src="assets/rice-type-cnn-classification/fig4.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">A small, well-regularized convolutional network sorts rice varieties accurately and fast enough for real use.</p>
+<ul><li>A compact CNN with dropout beat both a larger CNN and a plain ANN on accuracy while running noticeably faster.</li><li>Centered, clean grain images let even simple models do well, but convolution still wins for shape-driven distinctions.</li><li>Efficiency means both accuracy and inference speed, since the model targets real production sorting lines.</li><li>More epochs would likely push accuracy higher; 2 epochs were used here purely to limit compute time.</li><li>Built with: TensorFlow/Keras, NumPy, pandas, matplotlib, seaborn, PIL, and scikit-learn.</li></ul>
+</section>
+<section class="card"><h2>More Visualizations</h2><div class="figs grid"><img src="assets/rice-type-cnn-classification/fig5.png" loading="lazy"><img src="assets/rice-type-cnn-classification/fig6.png" loading="lazy"></div></section>
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li><li><b>tensorflow</b> — deep-learning framework</li><li><b>keras</b> — high-level neural-network API</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

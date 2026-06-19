@@ -1,0 +1,43 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Uber NYC Trip Demand Analysis — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>Uber NYC Trip Demand Analysis</h1><p>Exploring six months of NYC Uber pickups to understand when and where ride demand peaks</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">We studied half a year of New York Uber pickups to learn what times, places, and weather drive rider demand.</p>
+<ul><li>Uber operates in ~72 countries and 10,500 cities, with 118M monthly active users as of Q4 2021.</li><li>Goal: find patterns in hourly NYC pickups across boroughs, time, and weather.</li><li>Identify peak hours, peak days, and the busiest boroughs to guide driver supply.</li><li>Turn raw hourly logs into actionable demand insights for operations planning.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Raw Data] --> B[Clean & Validate]
+  B --> C[Univariate EDA]
+  C --> D[Bivariate / Correlation]
+  D --> E[Insights & Recommendations]</pre></section>
+<section class="card"><h2>The Data</h2>
+<p class="plain">The dataset is 29,101 hourly records of NYC Uber pickups from January to June 2015, with weather and location fields.</p>
+<ul><li>29,101 rows and 13 columns spanning Jan 1 to Jun 30, 2015 (six months).</li><li>Fields include pickupdt timestamp, borough, hourly pickups, plus weather (temp, visibility, snow depth).</li><li>Borough had 3,043 missing values (~15%), treated as a separate 'Unknown' category.</li><li>Six boroughs are nearly evenly represented; only 3.9% of days were holidays.</li><li>pickupdt converted to DateTime; borough and hday set as categorical.</li></ul>
+<div class="figs"><img src="assets/uber-trip-analysis/fig1.png" loading="lazy"></div>
+</section><section class="card"><h2>Exploratory Analysis</h2>
+<p class="plain">We charted how pickups vary and how weather and ride variables relate to each other.</p>
+<ul><li>Hourly pickups are highly right-skewed: median is 0 but mean is ~500, with many high outliers.</li><li>Visibility is left-skewed and generally good, with a few very-low-visibility outlier days.</li><li>Snow depth shows snowfall in the period with outliers, expected to suppress pickups.</li><li>Temperature shows high correlation with dew point; visibility is negatively correlated with precipitation.</li></ul>
+<div class="figs"><img src="assets/uber-trip-analysis/fig2.png" loading="lazy"><img src="assets/uber-trip-analysis/fig3.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Findings</h2>
+<p class="plain">Demand grew month over month and was heavily concentrated in Manhattan and in evening commute hours.</p>
+<ul><li>Monthly bookings rose steadily; June pickups were almost 1.5x January.</li><li>Pickups peak around the 20th of the month and drop near month-end (29th-31st).</li><li>Demand rises through the week, peaks around Saturday, then drops; Mondays are lowest.</li><li>Manhattan dominates pickups; Brooklyn and Queens trail; EWR, Staten Island, Unknown are negligible.</li><li>Mean pickups are lower on holidays overall, though Queens sees higher holiday demand.</li></ul>
+<div class="figs"><img src="assets/uber-trip-analysis/fig4.png" loading="lazy"></div>
+</section><section class="card"><h2>Insights & Recommendations</h2>
+<p class="plain">Pickups peak in the evening commute, so drivers should be concentrated in Manhattan during those hours.</p>
+<ul><li>Bookings peak at the 19th-20th hour (evening commute) and bottom out around 5 AM.</li><li>A secondary morning rise from 5-10 AM reflects the office commute.</li><li>Late-night demand stays high on Friday and Saturday, especially in Manhattan.</li><li>All four major boroughs share the same hourly pattern (clear on a log scale); EWR demand is near-random.</li><li>Allocate the most drivers to Manhattan during weekday evenings and weekend late nights.</li></ul>
+<div class="figs"><img src="assets/uber-trip-analysis/fig5.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">Uber NYC demand is predictable by hour, day, borough, and weather, enabling smarter driver allocation.</p>
+<ul><li>Analyzed ~30K hourly pickup records across six NYC boroughs over six months of 2015.</li><li>Demand is concentrated in Manhattan and peaks during evening commute hours.</li><li>Weekly, monthly, and holiday patterns provide a basis for supply planning.</li><li>Weather (snow, visibility) and time of day are key levers on ride demand.</li><li>Built with: pandas, numpy, matplotlib, seaborn, datetime</li></ul>
+</section>
+<section class="card"><h2>More Visualizations</h2><div class="figs grid"><img src="assets/uber-trip-analysis/fig6.png" loading="lazy"><img src="assets/uber-trip-analysis/fig7.png" loading="lazy"><img src="assets/uber-trip-analysis/fig8.png" loading="lazy"><img src="assets/uber-trip-analysis/fig9.png" loading="lazy"></div></section>
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

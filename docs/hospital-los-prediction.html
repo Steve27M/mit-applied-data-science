@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Predicting Hospital Length of Stay — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>Predicting Hospital Length of Stay</h1><p>Forecasting patient length-of-stay at admission to help HealthPlus plan beds, staff, and resources</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">We built a model that estimates how many days a patient will stay so the hospital can plan beds and staff in advance.</p>
+<ul><li>Poor allocation of beds, ventilators, and staff causes complications, a risk made vivid during the COVID-19 pandemic.</li><li>HealthPlus hired us to find what drives length of stay (LOS) and predict it from data captured at admission.</li><li>Accurate LOS forecasts let management pre-position resources, smooth patient flow, and reduce costly bottlenecks.</li><li>Goal: identify the strongest LOS drivers and deliver an interpretable, statistically valid prediction model.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Raw Data] --> B[Clean & Encode]
+  B --> C[EDA]
+  C --> D[Train/Test Split]
+  D --> E["Random Forest / Linear Regression / Ridge / Lasso"]
+  E --> F["Tune (Cross-Validation)"]
+  F --> G["Evaluate: R2 / RMSE"]</pre></section>
+<section class="card"><h2>The Data</h2>
+<p class="plain">We started with half a million admission records, each describing a patient and their hospital visit.</p>
+<ul><li>Dataset of 500,000 patient admission records across 15 columns, with no missing values and all rows unique.</li><li>Mix of numeric fields (extra rooms, staff available, visitors, admission deposit, stay) and categorical fields.</li><li>A single patient was admitted up to 21 times; on average ~3 rooms and ~5 staff were available per admission.</li><li>About 82% of patients arrive with moderate or minor illness; gynecology receives ~68% of all patients.</li><li>Target variable is Stay (in days), available only after admission and a few tests.</li></ul>
+</section><section class="card"><h2>Exploratory Analysis</h2>
+<p class="plain">We looked at how long patients typically stay and how the main numeric factors are distributed.</p>
+<ul><li>Most patients stay 8-9 days; few stay beyond 10 days and very few beyond 40, matching the mild-illness mix.</li><li>Admission deposit is roughly normally distributed with outliers paying unusually high or low fees.</li><li>Number of visitors is highly right-skewed, with 2 and 4 being the most common visitor counts.</li><li>Correlation heatmap shows almost no correlation among numeric features or with LOS.</li><li>Weak numeric correlations signaled that categorical features (ward, department, severity) would drive prediction.</li></ul>
+<div class="figs"><img src="assets/hospital-los-prediction/fig1.png" loading="lazy"><img src="assets/hospital-los-prediction/fig2.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Drivers of Length-of-Stay</h2>
+<p class="plain">Stay length is shaped mostly by which ward and department a patient is in, plus illness severity and age.</p>
+<ul><li>Wards A and C have the longest stays, suggesting they handle the most serious cases.</li><li>Ward A holds the most extreme cases and the only surgery patients, demanding more staff and resources.</li><li>Wards B, D, and F are dedicated to gynecology; A, C, and E cover all other diseases.</li><li>Patients aged 1-10 and 51-100 stay longest, while the 21-50 group skews toward shorter gynecology stays.</li><li>9 doctors staff the hospital, with 4 in high-volume gynecology; Dr. Sarah and Olivia treat the most patients.</li></ul>
+<div class="figs"><img src="assets/hospital-los-prediction/fig3.png" loading="lazy"><img src="assets/hospital-los-prediction/fig4.png" loading="lazy"></div>
+</section><section class="card"><h2>Modeling & Results</h2>
+<p class="plain">A linear regression model predicts stay within about two days, and adding complexity did not improve it.</p>
+<ul><li>Linear Regression reached an adjusted R-squared of ~0.84, explaining 84% of variance in length of stay.</li><li>Mean Absolute Error of ~2.15 days on test data, with train and test metrics close, so no overfitting.</li><li>Ridge, Lasso, and Elastic Net (tuned via GridSearchCV) gave no improvement over ordinary least squares.</li><li>All linear regression assumptions held: zero-mean normal residuals, linearity, and homoscedasticity.</li><li>Forward feature selection cut features from 42 to 8 (~81% fewer) while keeping R-squared at 0.840.</li></ul>
+<div class="figs"><img src="assets/hospital-los-prediction/fig5.png" loading="lazy"><img src="assets/hospital-los-prediction/fig6.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">We delivered an accurate, easy-to-explain LOS model and pinpointed the few factors that matter most.</p>
+<ul><li>LOS can be predicted at admission within ~2.15 days, supporting proactive bed and staff planning.</li><li>Ward, department, severity, and age are the dominant drivers; numeric variables add little signal.</li><li>A simple 8-feature linear model matches the full model, easing deployment, storage, and interpretation.</li><li>Verified statistical assumptions make the model trustworthy for inference, not just prediction.</li><li>Built with: pandas, numpy, matplotlib, seaborn, scikit-learn, statsmodels, mlxtend</li></ul>
+</section>
+<section class="card"><h2>More Visualizations</h2><div class="figs grid"><img src="assets/hospital-los-prediction/fig7.png" loading="lazy"><img src="assets/hospital-los-prediction/fig8.png" loading="lazy"><img src="assets/hospital-los-prediction/fig9.png" loading="lazy"><img src="assets/hospital-los-prediction/fig10.png" loading="lazy"></div></section>
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li><li><b>statsmodels</b> — OLS / statistical inference & VIF</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

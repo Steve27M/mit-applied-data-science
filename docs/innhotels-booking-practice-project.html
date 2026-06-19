@@ -1,0 +1,46 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Predicting Hotel Booking Cancellations for INN Hotels — Stephen Marn</title>
+<link rel="stylesheet" href="style.css">
+<script type="module">import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';mermaid.initialize({startOnLoad:true,theme:'dark',themeVariables:{primaryColor:'#10243f',primaryTextColor:'#e8f1ff',lineColor:'#4fc3e0',primaryBorderColor:'#4fc3e0'}});</script>
+</head><body>
+<a class="back" href="index.html">&larr; All Projects</a>
+<header class="hero"><div class="hero-inner"><h1>Predicting Hotel Booking Cancellations for INN Hotels</h1><p>Using tree-based classifiers to flag at-risk bookings before they cancel</p>
+<p class="byline">Data Science Project &middot; MIT Applied Data Science Program &middot; Stephen Marn</p></div></header>
+<main>
+<section class="card"><h2>Overview</h2><p class="plain">A large share of hotel bookings get cancelled, so I built a model to predict which ones are at risk.</p>
+<ul><li>Cancellations cost INN Hotels through lost revenue and last-minute distribution and re-marketing expenses.</li><li>Goal: predict in advance which bookings are likely to be cancelled so the hotel can act early.</li><li>Framed as a binary classification problem on the INN Hotels booking dataset.</li><li>Identified the key drivers of cancellation to guide concrete business policy recommendations.</li><li>Chose F1-score as the evaluation metric to balance the cost of both types of prediction errors.</li></ul></section>
+<section class="card"><h2>Methodology</h2><pre class="mermaid">flowchart LR
+  A[Raw Data] --> B[Clean & Encode]
+  B --> C[EDA]
+  C --> D[Train/Test Split]
+  D --> E["Random Forest / Decision Tree"]
+  E --> F["Tune (Cross-Validation)"]
+  F --> G["Evaluate: Recall / F1 / ROC"]
+  G --> H[Interpret]</pre></section>
+<section class="card"><h2>The Data</h2>
+<p class="plain">I worked with about 36,000 past bookings, each described by 19 details like lead time and price.</p>
+<ul><li>Dataset of 36,275 bookings with 19 columns covering guest, stay, and booking attributes.</li><li>Mix of categorical fields (meal plan, room type, market segment) and numeric fields.</li><li>No missing values; the unique Booking_ID identifier was dropped as it adds no predictive value.</li><li>Cleaned outliers, recoded rare children counts (9 and 10) to 3, and encoded the target.</li><li>Created dummy variables for categoricals before splitting into train and test sets.</li></ul>
+<div class="figs"><img src="assets/innhotels-booking-practice-project/fig1.png" loading="lazy"><img src="assets/innhotels-booking-practice-project/fig2.png" loading="lazy"></div>
+</section><section class="card"><h2>Exploratory Analysis</h2>
+<p class="plain">I explored how booking details relate to each other and to whether a booking was cancelled.</p>
+<ul><li>About 72% of bookings were for 2 adults and 93% included no children.</li><li>Lead-time distribution is right-skewed; most book close to arrival, but some over 400 days ahead.</li><li>Online bookings showed the most price variation; complementary segment rooms were near-free.</li><li>October had the most bookings but also the most cancellations; December and January cancelled least.</li><li>A correlation heatmap confirmed only weak relationships among most numeric variables.</li></ul>
+<div class="figs"><img src="assets/innhotels-booking-practice-project/fig3.png" loading="lazy"><img src="assets/innhotels-booking-practice-project/fig4.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Drivers of Cancellation</h2>
+<p class="plain">A handful of factors did most of the work in separating cancelled bookings from kept ones.</p>
+<ul><li>Lead time was the strongest driver: longer gaps before arrival meant much higher cancellation risk.</li><li>Online market-segment bookings cancelled far more than offline, corporate, or complementary ones.</li><li>Number of special requests and average price per room were the next most important features.</li><li>Repeat guests rarely cancelled, reinforcing their value to the hotel's brand and loyalty.</li><li>Both models agreed on the same top four drivers, lending confidence to these findings.</li></ul>
+<div class="figs"><img src="assets/innhotels-booking-practice-project/fig5.png" loading="lazy"><img src="assets/innhotels-booking-practice-project/fig6.png" loading="lazy"></div>
+</section><section class="card"><h2>Modeling & Results</h2>
+<p class="plain">I trained and tuned decision tree and random forest models, with the random forest performing best.</p>
+<ul><li>Built Decision Tree and Random Forest classifiers; both overfit badly when left unconstrained.</li><li>Tuned with GridSearchCV using class weights {0:0.3, 1:0.7} to counter the class imbalance.</li><li>Tuning cut overfitting and improved recall on the minority cancellation class.</li><li>Tuned random forest was the best model, reaching about 85% F1-score on the test set.</li><li>Achieved a macro average of roughly 89%, with balanced precision and recall for cancellations.</li></ul>
+<div class="figs"><img src="assets/innhotels-booking-practice-project/fig7.png" loading="lazy"><img src="assets/innhotels-booking-practice-project/fig8.png" loading="lazy"></div>
+</section><section class="card"><h2>Key Takeaways</h2>
+<p class="plain">The hotel can now flag risky bookings early and act to reduce cancellations.</p>
+<ul><li>The tuned random forest reliably predicts which bookings are likely to be cancelled.</li><li>Lead time, online channel, special requests, and room price are the levers to watch.</li><li>Recommendation: contact long-lead and online bookings before arrival to re-confirm.</li><li>Cultivating repeat guests further protects against cancellations and builds brand equity.</li><li>Built with: pandas, numpy, matplotlib, seaborn, scikit-learn.</li></ul>
+</section>
+<section class="card"><h2>More Visualizations</h2><div class="figs grid"><img src="assets/innhotels-booking-practice-project/fig9.png" loading="lazy"><img src="assets/innhotels-booking-practice-project/fig10.png" loading="lazy"><img src="assets/innhotels-booking-practice-project/fig11.png" loading="lazy"><img src="assets/innhotels-booking-practice-project/fig12.png" loading="lazy"></div></section>
+<section class="card"><h2>Tech Stack</h2><ul class="stack"><li><b>pandas</b> — data wrangling and tabular manipulation</li><li><b>numpy</b> — fast numerical arrays</li><li><b>scikit-learn</b> — modeling, pipelines, and evaluation</li><li><b>seaborn</b> — statistical visualization</li><li><b>matplotlib</b> — plotting</li></ul></section>
+<section class="card"><h2>Attribution</h2><p class="cite">This project was completed as part of the MIT Applied Data Science Program (MIT IDSS / Great Learning). The program provided the case-study scaffolding; the analysis, code, and results are my own. Published with permission, for portfolio use only.</p></section>
+</main>
+<footer>Stephen Marn &middot; MIT Applied Data Science Program</footer>
+</body></html>

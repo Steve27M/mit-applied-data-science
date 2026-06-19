@@ -1,0 +1,20 @@
+*{box-sizing:border-box}body{margin:0;background:#070d1a;color:#dce7f5;font-family:Segoe UI,Calibri,system-ui,sans-serif;line-height:1.55}
+a{color:#4fc3e0;text-decoration:none}.back{position:fixed;top:14px;left:16px;background:#0d1b30cc;padding:6px 12px;border:1px solid #1f4060;border-radius:6px;font-size:14px;z-index:5}
+.hero{position:relative;padding:90px 24px 60px;text-align:center;background:linear-gradient(180deg,#070d1acc,#070d1aee),url('assets/theme/hero.jpg');background-size:cover;background-position:center;border-bottom:1px solid #16304f}
+.hero.big{padding:120px 24px 90px}.hero h1{font-size:42px;margin:0 0 8px;color:#fff;letter-spacing:.5px}
+.hero p{margin:4px 0;color:#bcd4ee}.byline{color:#7fa6cc!important;font-size:15px}
+main{max-width:1080px;margin:0 auto;padding:28px 20px 60px}
+.card{background:#0c1830;border:1px solid #173255;border-left:4px solid #4fc3e0;border-radius:10px;padding:20px 24px;margin:18px 0;box-shadow:0 2px 16px #0006}
+.card h2{color:#fff;margin:0 0 12px;font-size:24px}.plain{color:#8fd4e8;font-style:italic;margin:0 0 12px}
+.card ul{margin:0;padding-left:20px}.card li{margin:6px 0}
+.figs{display:flex;flex-wrap:wrap;gap:14px;margin-top:16px}.figs img{max-width:48%;background:#fff;border-radius:8px;padding:6px;border:1px solid #234}
+.figs.grid img{max-width:31%}.mermaid{background:#0a1426;border-radius:8px;padding:16px;text-align:center}
+.stack li b{color:#f2b14c}.cite{color:#9fb6d0;font-size:15px}
+footer{text-align:center;padding:30px;color:#5f7da0;border-top:1px solid #16304f}
+.grid-wrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+.proj{display:flex;flex-direction:column;background:#0c1830;border:1px solid #173255;border-radius:12px;overflow:hidden;transition:.15s;color:inherit}
+.proj:hover{transform:translateY(-4px);border-color:#4fc3e0;box-shadow:0 6px 24px #0008}
+.thumb{height:150px;background:#06101f;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:cover}.pmeta{padding:14px 16px}.pmeta h3{margin:6px 0;color:#fff;font-size:18px}
+.pmeta p{margin:0;color:#9fb6d0;font-size:14px}.tag{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#070d1a;background:#4fc3e0;padding:2px 8px;border-radius:10px}
+@media(max-width:700px){.figs img,.figs.grid img{max-width:100%}.hero h1{font-size:30px}}
