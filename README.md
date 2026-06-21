@@ -88,3 +88,9 @@ A themed, browsable version of every project is published with **GitHub Pages** 
 ## 📚 Attribution
 
 These projects were completed as part of the **MIT Applied Data Science Program** (MIT IDSS / Great Learning). The program provided the case-study scaffolding and data; the analysis, code, and results are my own. Course materials, provided solution notebooks, and program datasets are **not** redistributed here — published with permission, for portfolio use only.
+
+## ⚖️ Use & integrity
+
+© Stephen Marn — **all rights reserved.** This repository is shared as a **portfolio showcase**, not as an open-source template: it carries no software license, so the code is not granted for reuse, copying, or redistribution.
+
+If you are currently enrolled in this or a similar program, **do not copy this work or submit it as your own** — doing so violates your program's honor code. Learn from the approach, then write your own.

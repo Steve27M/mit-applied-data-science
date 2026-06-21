@@ -78,3 +78,7 @@ best_model.h5
 #  *.ipynb (your notebooks), README.md, requirements.txt,
 #  figures/*.png, docs/** (site + assets), *.pptx capstone deck
 # ============================================================
+
+# Mentored Learning Session notebooks — Great Learning IP, never publish
+**/*MLS*.ipynb
+**/*_MLS.ipynb
